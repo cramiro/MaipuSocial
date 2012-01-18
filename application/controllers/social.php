@@ -24,13 +24,21 @@ class Social extends CI_Controller {
         //$this->load->helper('form');
         //$this->load->library('form_validation');
 
-        $search = new Entities\Search;
-        $search->setIsTemp($this->input->post('is_temp'));
+		$search_id = $this->input->post('search-id');
+
+		if ( $search_id == '' ){
+			// Si no tiene id => creo nueva busqueda
+	        $search = new Entities\Search;
+		}else{
+			// Si tiene id => lo busco para actualizar
+			$search = $this->doctrine->em->find('Entities\Search', $search_id);
+		}
+		$search->setIsTemp($this->input->post('is_temp'));
         $search->setKeywords($this->input->post('keywords'));
         $search->setExcludeWords($this->input->post('exclude_words'));
         $search->setUpdated(new Datetime());
 
-        $this->doctrine->em->persist($search);
+		$this->doctrine->em->persist($search);
         $this->doctrine->em->flush();
 
         //echo "Success!";
@@ -456,7 +464,7 @@ class Social extends CI_Controller {
 		//$result = perform_search($search, $networks);
 
 		// test search
-		$search = $this->doctrine->em->find('Entities\Search', 1);
+		$search = $this->doctrine->em->find('Entities\Search', 2);
         //echo "<pre>"; print_r($search);   echo "</pre>";
         $result = $this->perform_search($search);
 		try {
@@ -504,26 +512,6 @@ class Social extends CI_Controller {
     }
 
 	public function admin(){
-		$busquedas = array();
-        $busquedas[] = array(
-                'db_name'       =>      'Mundo Maipu',
-                'label'         =>      'Mundo Maipu',
-				'keywords'		=>		'mundo maipu gm verano carlos paz',
-				'exclude_words'	=>		'san cristobal seguros',
-                );
-        $busquedas[] = array(
-                'db_name'       =>      'Concesionarias',
-                'label'         =>      'Concesionarias',
-				'keywords'      =>      'concesionaria grande ubicacion donde',
-                'exclude_words' =>      'motos barcos',
-                );
-        $busquedas[] = array(
-                'db_name'       =>      'Oportunidades',
-                'label'         =>      'Oportunidades',
-				'keywords'      =>      'comprar auto nuevo 0km',
-                'exclude_words' =>      'juguete ojala',
-                );
-
 
         // Cargo los helpers que voy a necesitar
         $this->load->helper('url');
@@ -543,7 +531,6 @@ class Social extends CI_Controller {
                 'item_link'     =>      'http://twitter.com'
                 );
 
-		$data['options'] = $busquedas;
         $data['sidebar'] = array(
                 'Sidebar 1'     =>      $sidebar1,
                 'Sidebar 2'     =>      $sidebar1,
@@ -569,19 +556,38 @@ class Social extends CI_Controller {
         $data['brand'] = 'MaipuSocial';
         $data['username'] = 'user';
 
+		
+		$searches = $this->doctrine->em->getRepository('Entities\Search')->findBy(array());
+
+		$busquedas = array();
+		$count = 1;
+		foreach ($searches as $search){
+			$nueva = array();
+			$nueva['id'] = $search->getId();
+			$nueva['db_name'] = $nueva['id'];
+			$nueva['label'] = "Busqueda ".$count;
+			$nueva['keywords'] = $search->getKeywords();
+			$nueva['exclude_words'] = $search->getExcludeWords();
+			$busquedas[] = $nueva;
+			$count +=1;
+		}
+		$data['options'] = $busquedas;
+
         // Cargo las vistas
         $this->load->view('templates/bootstrap/fluid_header', $data);
         $this->load->view('templates/bootstrap/fluid_edit_search', $data);
 
 		$busqueda= $this->input->post('lista-busqueda');
 
-		if ($this->input->post('lista-busqueda') != '' ){
-			echo "<pre>";
-			print_r($this->input->post());
-			echo "</pre>";
+		if ($busqueda != '' ){
+			$search_item = $this->doctrine->em->find('Entities\Search', $busqueda);
+			//echo "<pre>";
+			//print_r($search_item);
+			//echo "</pre>";
 			// si seleccionaron una busqueda, muestro formulario edit
-			$this->load->view('templates/bootstrap/fluid_edit_search_form', $data);
+			$data['search_item'] = $search_item;
 		}
+		$this->load->view('templates/bootstrap/fluid_edit_search_form', $data);
         $this->load->view('templates/bootstrap/fluid_footer', $data);
 
 	}

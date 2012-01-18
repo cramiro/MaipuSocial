@@ -4,11 +4,20 @@
 				echo "<div class='span12'>";
 				$form =  form_open('social/save_search');
 
-				$name = 'Nombre...';
+				$value = '';
+				if (isset($search_item)){
+                    $value = $search_item->getId();
+                }
+				$form .= form_hidden('search-id',$value );
+
+				$value = '';
+                if (isset($search_item)){
+                    $value = $search_item->getId();
+                }
 				$data = array(
 						'name'		=>		'search-name',
 						'id'		=>		'search-name',
-						'value'		=>		$name,
+						'value'		=>		$value,
 						'size'		=>		'30',
 						'class'		=>		'xlarge',
 						);
@@ -21,17 +30,17 @@
 
 				$form .= $dropdown;
 			
-
-				$descripcion = 'Una descripcion aqui...';
-				$descripcion .= ' ...';
-				
+				$value = '';
+				if (isset($search_item)){
+					$value = $search_item->getKeywords();
+				}
 				// Text area para descripcion de caso u oportunidad
 				$data = array(
 						'class'		=>		'xxlarge',
 						'rows'		=>		'3',
 						'id'		=>		'keywords',
 						'name'		=>		'keywords',
-						'value'		=>		$descripcion,
+						'value'		=>		$value,
 						);
 
 				$textarea = "<div class='clearfix'><label for='textarea'>Palabras deseadas</label>";
@@ -42,13 +51,18 @@
 
 				$form .= $textarea;
 
+
+				$value = '';
+                if (isset($search_item)){
+                    $value = $search_item->getExcludeWords();
+                }
 				// Textarea para palabras no deseadas
                 $data = array(
                         'class'     =>      'xxlarge',
                         'rows'      =>      '3',
                         'id'        =>      'exclude_words',
                         'name'      =>      'exclude_words',
-                        'value'     =>      $descripcion,
+                        'value'     =>      $value,
                         );
 
                 $textarea = "<div class='clearfix'><label for='textarea'>Palabras a excluir</label>";

@@ -14,6 +14,12 @@ function optionsButton(){
 
 }
 
+function closeAlert(item){
+	var btn = $('#'+item);
+	$.get('http://localhost/social/index.php/social/save_search');
+	btn.alert('close');
+}
+
 
 function importSugar(item){
 
@@ -28,10 +34,11 @@ function importSugar(item){
 function saveSearch(){
 	var btn = $('#save-search');
     btn.button('loading');
+	$.get('http://localhost/social/index.php/social/save_search');
     setTimeout(function(){btn.button('complete')}, 3000);
 
 	// Muestro alert
-	setTimeout(function(){$("#myalert").show('slow');btn.hide('slow');}, 3005);
+//	setTimeout(function(){$("#myalert").show('slow');btn.hide('slow');}, 3005);
 }
 
 

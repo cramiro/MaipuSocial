@@ -13,9 +13,10 @@
 
 				// Inicio div contenedor del item
 				$new_item = "<div class='span5'>";
-				//$new_item .= "<div id='myalert' class='alert-message block-message success fade in' data-alert='alert'>";
+				$id = 'myalert'.$count;
+				$new_item .= "<div id='{$id}' class='alert-message block-message fade in'>";
                 // Agrego el boton para cerrar el bloque
-                //$new_item .= "<a class='close' href='#'>×</a>";
+                $new_item .= "<a class='close' href='#' onclick=\"closeAlert('{$id}');\">×</a>";
 				$new_item .= "<h2>".$value['title']."</h2>";
             	$new_item .= $value['description'];
 				//echo "<p>".$value['description']."</p>";
@@ -43,7 +44,7 @@
 				//$buttons .= "  <button id='toSugar{$count}' class='btn danger'data-toggle='toggle'data-loading-text='importando...' onclick='importSugar({$count});' data-complete-text='Importado!'>A SugarCRM</button>";
 				$new_item .= form_close();
 				$new_item .= "</p>";
-				//$new_item .= "</div>"; // cierro div de bloque de alerta
+				$new_item .= "</div>"; // cierro div de bloque de alerta
 				$new_item .= "</div>"; // cierro div de span5
 				echo $new_item;
 //				echo "<\div>";
