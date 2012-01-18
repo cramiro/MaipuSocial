@@ -456,9 +456,9 @@ class Social extends CI_Controller {
 		//$result = perform_search($search, $networks);
 
 		// test search
-		$search = $this->doctrine->em->find('Entities\Search', 1);
-        //echo "<pre>"; print_r($search);   echo "</pre>";
+		$search = $this->doctrine->em->find('Entities\Search', 2);
         $result = $this->perform_search($search);
+        echo "<pre>"; Doctrine\Common\Util\Debug::dump($result); echo "</pre>";
 		try {
 			$result = $result->items;
 		} catch (Exception $e) {
