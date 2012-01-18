@@ -22,6 +22,20 @@ class Search
     private $id;
 
     /**
+     * @var boolean $name
+     *
+     * @Column(name="name", type="string", length=20)
+     */
+    private $name;
+
+    /**
+     * @var boolean $description
+     *
+     * @Column(name="description", type="string", length=80)
+     */
+    private $description;
+
+    /**
      * @var boolean $is_temp
      *
      * @Column(name="is_temp", type="boolean")
@@ -70,9 +84,24 @@ class Search
         return $this->id;
     }
     
-    public function getIsTemp()
+    public function getName()
     {
-        return $this->is_temp;
+        return $this->name;
+    }
+    
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
+    
+    public function getDescription()
+    {
+        return $this->description;
+    }
+    
+    public function setDescription($description)
+    {
+        $this->description = $description;
     }
     
     public function setIsTemp($is_temp)
@@ -128,5 +157,25 @@ class Search
     public function addToSearchResults($item)
     {
         $this->items[] = $item;
+    }
+
+    /**
+     * Add items
+     *
+     * @param Entities\Item $items
+     */
+    public function addItem(\Entities\Item $items)
+    {
+        $this->items[] = $items;
+    }
+
+    /**
+     * Get is_temp
+     *
+     * @return boolean 
+     */
+    public function getIsTemp()
+    {
+        return $this->is_temp;
     }
 }
