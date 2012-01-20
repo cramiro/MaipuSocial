@@ -98,7 +98,7 @@ class Social extends CI_Controller {
         // first level we got an engine name, and in the second level
         // every network that engine has to search.
         $plugin_networks = array();
-        foreach($search->getNetworks() as $network){
+        foreach($this->doctrine->em->getRepository('Entities\Network')->findBy(array()) as $network){
             //echo "Searching network: ".$network->getName()."<br>";
             $engine = $network->getDefaultEngine();
             //echo "Search using engine: ".$engine->getName()."<br>";
@@ -111,29 +111,27 @@ class Social extends CI_Controller {
                 $plugin_networks[$engine->getName()] = array($network->getName());
             }
         }
-        //echo "<pre>";var_dump($plugin_networks);echo "</pre>";
+
+        // We now know what plugin has to search which network
 
 
-        // We know now about which plugin has to search which network
-        // Load plugin
-        /*$this->load->driver('Engine');
-        echo "Ok load driver";
-        $this->engine->socialmention->twitter('Hola');*/
         require_once('application/libraries/iEngine.php');
-		$motor = 'Socialmention';
-        //require_once('application/libraries/'.$engine->getName().'.php');
-		require_once('application/libraries/'.$motor.'.php');
-        //echo "Ok load library<br>";
+        $items_arr = array();
+        foreach ($plugin_networks as $engine_name => $value){
+		    require_once('application/libraries/'.$engine_name.'.php');
+            
+            $engine = new $engine_name();
+            // Call plugin
+		    $items_arr = array_merge($items_arr, $engine->search($this->doctrine->em, $search, $plugin_networks[$engine_name]));
+        }
 
-        $engine_name = $engine->getName();
-        $engine = new $engine_name();
-        //echo "<pre>";var_dump($engine);echo "</pre><br>";
+        // Save results in database (the search model does this)
+        $search->save_results($items_arr);
+        $this->doctrine->em->persist($search);
+        $this->doctrine->em->flush();
 
-        //echo "Search networks: <pre>";var_dump($plugin_networks[$engine_name]);echo "</pre><br>";
-       
-        // Call plugin
-		$result = $engine->search($this->doctrine->em, $search->getKeywords(), array(), $plugin_networks[$engine_name]);
-		return $result;
+        // Return status code, 0 means it's OK
+		return 0;
     }
 
 	public function send(){
@@ -436,60 +434,56 @@ class Social extends CI_Controller {
         echo "</pre>";
 		*/
 
-		// Creo y guardo la busqueda
-		$search = new Entities\Search;
-        $search->setIsTemp($this->input->post('is_temp'));
-        $search->setKeywords($this->input->post('keywords'));
-        $search->setExcludeWords($this->input->post('exclude_words'));
-        $search->setUpdated(new Datetime());
+		// Me fijo si hay una busqueda con esas keywords. Sino, la creo y la guardo
+        $search = $this->doctrine->em->getRepository('Entities\Search')->findOneBy(array("keywords" => $this->input->post('keywords')));
+        if(!$search){
+            $search = new Entities\Search;
+            $search->setIsTemp($this->input->post('is_temp'));
+            $search->setKeywords($this->input->post('keywords'));
+            $search->setName('nombre');
+            $search->setDescription('descripcion');
+            $search->setExcludeWords($this->input->post('exclude_words'));
+            $search->setUpdated(new Datetime());
 
-		// Guarda busqueda en la DB solo si no HOT-SEARCH
-        //$this->doctrine->em->persist($search);
-        //$this->doctrine->em->flush();
+            $this->doctrine->em->persist($search);
+            $this->doctrine->em->flush();
 
-        //echo "Success!";
+    		// Pido al modelo que realice la busqueda
+	    	$this->perform_search($search);
+        }
 
-		// Relaciono la busqueda recien creada con networks
-		// no es necesario por ahora
-
-		// Pido al modelo que haga la busqueda
-		//$result = perform_search($search, $networks);
-
-		// test search
-		$search = $this->doctrine->em->find('Entities\Search', 2);
-        $result = $this->perform_search($search);
-        echo "<pre>"; Doctrine\Common\Util\Debug::dump($result); echo "</pre>";
-		try {
+        //echo "<pre>"; Doctrine\Common\Util\Debug::dump($result); echo "</pre>";
+		/*try {
 			$result = $result->items;
 		} catch (Exception $e) {
 		    echo 'Caught exception: ',  $e->getMessage(), "\n";
 			echo "<pre>"; print_r($result);echo "</pre>";
-		}
+		}*/
 
-		//echo "<pre>"; print_r($result);echo "</pre>";
-
-		// Recupero resultados y los paso a las vistas 
+		// Recupero resultados y los paso a las vistas
+        $result = $search->get_results();
 		$items = array();
 		foreach ($result as $key => $val){
 				// $val es stdClass Object con campos
 				// title - description - link - timestamp - image - embed - language - user
 				// user_image - user_link - user_id - geo - source - favicon - type - domain - id
 			$item = array();
-			$item['source'] = $val->source;
+            //echo "RESULT: <pre>";Doctrine\Common\Util\Debug::dump($result);echo "</pre>";
+			$item['source'] = $val->getNetwork();
 
 			if ( $item['source'] == 'twitter'){
-				$item['title'] = 'Twitt';
-				$item['description'] = $val->title;
-				$item['user'] = '@'.$val->user;
+				$item['title'] = 'Twit';
+				$item['description'] = $val->getTitle();
+				$item['user'] = '@'.$val->getUser();
 			}else{
-				$item['title'] = $val->title;
-				$item['description'] = $val->description;
+				$item['title'] = $val->getTitle();
+				$item['description'] = $val->getDescription();
 			}
-			$item['link'] = $val->link;
-            $item['user_link'] = $val->user_link;
-            $item['domain'] = $val->domain;
-            $item['user_image'] = $val->user_image;
-			$item['timestamp'] = $val->timestamp;
+			$item['link'] = $val->getLink();
+            $item['user_link'] = $val->getUserLink();
+            $item['domain'] = $val->getDomain();
+            $item['user_image'] = $val->getUserImage();
+			$item['timestamp'] = 100000;//$val->getTimestamp();
 
 			$items[]=$item;
 		}

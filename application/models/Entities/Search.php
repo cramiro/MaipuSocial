@@ -64,19 +64,13 @@ class Search
     private $updated;
 
     /**
-     * @OneToMany(targetEntity="Entities\Item", mappedBy="search")
+     * @OneToMany(targetEntity="Entities\Item", mappedBy="search", cascade={"persist", "remove"})
      */
     private $items;
-
-    /**
-     * @ManyToMany(targetEntity="Entities\Network")
-     */
-    private $networks;
 
     public function __construct()
     {
         $this->items = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->networks = new \Doctrine\Common\Collections\ArrayCollection();
     }
     
     public function getId()
@@ -139,16 +133,6 @@ class Search
         $this->updated = $updated;
     }
     
-    public function getNetworks()
-    {
-        return $this->networks;
-    }
-    
-    public function addNetwork($network)
-    {
-        $this->networks[] = $network;
-    }
-    
     public function getItems()
     {
         return $this->items;
@@ -178,4 +162,30 @@ class Search
     {
         return $this->is_temp;
     }
+
+    public function save_results($items_arr){
+        //$this->load->library('doctrine');
+        foreach ($items_arr as $item){
+            $item->setSeen(false);
+            $item->setDeleted(false);
+            //echo "<pre>"; var_dump($this->doctrine->em); echo "</pre>";
+            $this->addItem($item);
+            //$this->doctrine->em->persist($item);
+        }
+
+        //$this->doctrine->em->persist($this);
+        //$this->doctrine->em->flush();
+    }
+
+    public function get_results(){
+
+        $result = $this->getItems();
+        foreach ($result as $item){
+            $item->setSeen(true);
+            //$this->doctrine->em->persist($item);
+        }
+
+        return $result;
+    }
+
 }
