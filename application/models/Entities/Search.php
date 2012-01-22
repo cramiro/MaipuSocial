@@ -64,7 +64,7 @@ class Search
     private $updated;
 
     /**
-     * @OneToMany(targetEntity="Entities\Item", mappedBy="search", cascade={"persist", "remove"})
+     * @OneToMany(targetEntity="Entities\Item", mappedBy="search")
      */
     private $items;
 
@@ -164,17 +164,13 @@ class Search
     }
 
     public function save_results($items_arr){
-        //$this->load->library('doctrine');
         foreach ($items_arr as $item){
             $item->setSeen(false);
             $item->setDeleted(false);
-            //echo "<pre>"; var_dump($this->doctrine->em); echo "</pre>";
+
             $this->addItem($item);
-            //$this->doctrine->em->persist($item);
         }
 
-        //$this->doctrine->em->persist($this);
-        //$this->doctrine->em->flush();
     }
 
 }

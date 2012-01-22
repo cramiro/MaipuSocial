@@ -125,6 +125,10 @@ class Social extends CI_Controller {
 		    $items_arr = array_merge($items_arr, $engine->search($this->doctrine->em, $search, $plugin_networks[$engine_name]));
         }
 
+        // Save each item into the database
+        foreach ($items_arr as $item)
+            $this->doctrine->em->persist($item);
+
         // Save results in database (the search model does this)
         $search->save_results($items_arr);
         $this->doctrine->em->persist($search);
