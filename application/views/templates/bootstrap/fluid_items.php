@@ -25,8 +25,8 @@
 				$new_item .= "por <img style='width:24px;height:24px;' src='{$value['user_image']}'> ";
 				$new_item .= "<a target='_blank' href='{$value['user_link']}'>{$value['user']}</a> via ";
 				$new_item .= "<a target='_blank' href='http://{$value['domain']}'>{$value['source']}</a>";
-				$new_item .= " ".date('d/m/Y h:i:s A', $value['timestamp']);
-				$new_item .= "</div></p>";
+				$new_item .= " ".$value['timestamp'];
+				$new_item .= $value['has_been_seen']."</div></p>";
 				//echo $source;
 
 				$new_item .=  form_open('social/toSugar');

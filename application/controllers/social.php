@@ -461,7 +461,7 @@ class Social extends CI_Controller {
 		}*/
 
 		// Recupero resultados y los paso a las vistas
-        $result = $search->get_results();
+        $result = $search->getResults();
 		$items = array();
 		foreach ($result as $key => $val){
 				// $val es stdClass Object con campos
@@ -483,10 +483,16 @@ class Social extends CI_Controller {
             $item['user_link'] = $val->getUserLink();
             $item['domain'] = $val->getDomain();
             $item['user_image'] = $val->getUserImage();
-			$item['timestamp'] = 100000;//$val->getTimestamp();
+			$item['timestamp'] = $val->getTimestamp()->format('d/m/Y h:i:s A');
+			$item['has_been_seen'] = $val->getSeen();
+
+            // Marco los items como vistos
+            $val->setSeen(1);
 
 			$items[]=$item;
 		}
+        // Actualizo los cambios (seen) en la base de datos
+        $this->doctrine->em->flush();
 		$data['items'] = $items;
 		$this->items = $items;
 		// Cargo las vistas

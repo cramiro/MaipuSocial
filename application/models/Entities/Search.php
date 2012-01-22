@@ -133,7 +133,7 @@ class Search
         $this->updated = $updated;
     }
     
-    public function getItems()
+    public function getResults()
     {
         return $this->items;
     }
@@ -175,17 +175,6 @@ class Search
 
         //$this->doctrine->em->persist($this);
         //$this->doctrine->em->flush();
-    }
-
-    public function get_results(){
-
-        $result = $this->getItems();
-        foreach ($result as $item){
-            $item->setSeen(true);
-            //$this->doctrine->em->persist($item);
-        }
-
-        return $result;
     }
 
 }
