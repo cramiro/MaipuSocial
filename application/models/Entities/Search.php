@@ -59,7 +59,7 @@ class Search
     /**
      * @var datetime $updated
      *
-     * @Column(name="updated", type="datetime")
+     * @Column(name="updated", type="datetime", nullable=true)
      */
     private $updated;
 

@@ -54,13 +54,16 @@ class Socialmention implements iEngine {
             $item->setImage($item_raw->image);
             $item->setLanguage($item_raw->language);
             $item->setLink($item_raw->link);
-            $item->setTimestamp(new Datetime("now"));
             $item->setTitle($item_raw->title);
             $item->setType($item_raw->type);
             $item->setUser($item_raw->user);
             $item->setUserId($item_raw->user_id);
             $item->setUserImage($item_raw->user_image);
             $item->setUserLink($item_raw->user_link);
+
+            $t = new DateTime();
+            $t->setTimestamp($item_raw->timestamp);
+            $item->setTimestamp($t);
 
             $results[] = $item;
             //echo "<pre>"; Doctrine\Common\Util\Debug::dump($item); echo "</pre>";

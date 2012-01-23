@@ -92,52 +92,6 @@ class Social extends CI_Controller {
 
     }
 
-    private function perform_search($search)
-    {
-        // Populate dict plugin_networks[engine][network] so in the
-        // first level we got an engine name, and in the second level
-        // every network that engine has to search.
-        $plugin_networks = array();
-        foreach($this->doctrine->em->getRepository('Entities\Network')->findBy(array()) as $network){
-            //echo "Searching network: ".$network->getName()."<br>";
-            $engine = $network->getDefaultEngine();
-            //echo "Search using engine: ".$engine->getName()."<br>";
-
-            if(array_key_exists($engine->getName(), $plugin_networks)){
-                // Add network to the engine
-                $plugin_networks[$engine->getName()][] = $network->getName();
-            }else{
-                // Add key to the array
-                $plugin_networks[$engine->getName()] = array($network->getName());
-            }
-        }
-
-        // We now know what plugin has to search which network
-
-
-        require_once('application/libraries/iEngine.php');
-        $items_arr = array();
-        foreach ($plugin_networks as $engine_name => $value){
-		    require_once('application/libraries/'.$engine_name.'.php');
-            
-            $engine = new $engine_name();
-            // Call plugin
-		    $items_arr = array_merge($items_arr, $engine->search($this->doctrine->em, $search, $plugin_networks[$engine_name]));
-        }
-
-        // Save each item into the database
-        foreach ($items_arr as $item)
-            $this->doctrine->em->persist($item);
-
-        // Save results in database (the search model does this)
-        $search->save_results($items_arr);
-        $this->doctrine->em->persist($search);
-        $this->doctrine->em->flush();
-
-        // Return status code, 0 means it's OK
-		return 0;
-    }
-
 	public function send(){
 		$this->load->helper('url');
         $this->load->helper('form');
@@ -447,13 +401,12 @@ class Social extends CI_Controller {
             $search->setName('nombre');
             $search->setDescription('descripcion');
             $search->setExcludeWords($this->input->post('exclude_words'));
-            $search->setUpdated(new Datetime());
 
             $this->doctrine->em->persist($search);
-            $this->doctrine->em->flush();
 
-    		// Pido al modelo que realice la busqueda
-	    	$this->perform_search($search);
+    		// Pido a la libreria que realice la busqueda
+            $this->load->library('search');
+	    	$this->search->perform_search($this->doctrine->em, $search);
         }
 
         //echo "<pre>"; Doctrine\Common\Util\Debug::dump($result); echo "</pre>";
@@ -468,11 +421,7 @@ class Social extends CI_Controller {
         $result = $search->getResults();
 		$items = array();
 		foreach ($result as $key => $val){
-				// $val es stdClass Object con campos
-				// title - description - link - timestamp - image - embed - language - user
-				// user_image - user_link - user_id - geo - source - favicon - type - domain - id
 			$item = array();
-            //echo "RESULT: <pre>";Doctrine\Common\Util\Debug::dump($result);echo "</pre>";
 			$item['source'] = $val->getNetwork();
 
 			if ( $item['source'] == 'twitter'){
@@ -491,7 +440,7 @@ class Social extends CI_Controller {
 			$item['has_been_seen'] = $val->getSeen();
 
             // Marco los items como vistos
-            $val->setSeen(1);
+            $val->setSeen(true);
 
 			$items[]=$item;
 		}
