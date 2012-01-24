@@ -78,6 +78,13 @@ class Item
     private $link;
 
     /**
+     * @var string $hash
+     *
+     * @Column(name="hash", type="string", length=40, unique=true)
+     */
+    private $hash;
+
+    /**
      * @var string $timestamp
      *
      * @Column(name="timestamp", type="datetime")
@@ -174,6 +181,12 @@ class Item
         $this->search = $search;
     }
 
+    public function unsetSearch($search)
+    {
+        $search->removeFromSearchResults($this);
+        $this->search = null;
+    }
+
     public function getDescription()
     {
         return $this->description;
@@ -252,6 +265,11 @@ class Item
     public function setLink($link)
     {
         $this->link = $link;
+    }
+
+    public function setHash($hash)
+    {
+        $this->hash = $hash;
     }
 
     public function getTimestamp()

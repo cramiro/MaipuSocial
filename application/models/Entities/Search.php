@@ -142,6 +142,11 @@ class Search
     {
         $this->items[] = $item;
     }
+    
+    public function removeFromSearchResults($item)
+    {
+        $this->items->removeElement($item);
+    }
 
     /**
      * Add items

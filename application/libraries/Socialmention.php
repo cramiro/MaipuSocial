@@ -61,6 +61,8 @@ class Socialmention implements iEngine {
             $item->setUserImage($item_raw->user_image);
             $item->setUserLink($item_raw->user_link);
 
+            $item->setHash(sha1($item_raw->link));
+
             $t = new DateTime();
             $t->setTimestamp($item_raw->timestamp);
             $item->setTimestamp($t);
