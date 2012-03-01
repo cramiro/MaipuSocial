@@ -421,13 +421,7 @@ class Social extends CI_Controller {
 
 		// Obtengo los valores de la busqueda
         $search = $this->input->post('keywords');
-
-        $opciones = array(
-            'facebook'	=> 	$this->input->post('facebook'),
-            'blogs' 	=> 	$this->input->post('blogs'),
-            'foros' 	=> 	$this->input->post('foros'),
-            );
-		
+		$sources = $this->input->post('source');
 		// Obtengo el id de los networks
 		// Armo un array con las networks seleccionadas
 
@@ -467,6 +461,7 @@ class Social extends CI_Controller {
 		$search = $this->doctrine->em->find('Entities\Search', 2);
         //echo "<pre>"; print_r($search);   echo "</pre>";
         $result = $this->perform_search($search);
+        echo "<pre>"; Doctrine\Common\Util\Debug::dump($result); echo "</pre>";
 		try {
 			$result = $result->items;
 		} catch (Exception $e) {
@@ -479,6 +474,9 @@ class Social extends CI_Controller {
 		// Recupero resultados y los paso a las vistas 
 		$items = array();
 		foreach ($result as $key => $val){
+			if ( $sources  and ! in_array($val->source, $sources)){
+				continue;
+			}
 				// $val es stdClass Object con campos
 				// title - description - link - timestamp - image - embed - language - user
 				// user_image - user_link - user_id - geo - source - favicon - type - domain - id
@@ -512,6 +510,26 @@ class Social extends CI_Controller {
     }
 
 	public function admin(){
+		$busquedas = array();
+        $busquedas[] = array(
+                'db_name'       =>      'Mundo Maipu',
+                'label'         =>      'Mundo Maipu',
+				'keywords'		=>		'mundo maipu gm verano carlos paz',
+				'exclude_words'	=>		'san cristobal seguros',
+                );
+        $busquedas[] = array(
+                'db_name'       =>      'Concesionarias',
+                'label'         =>      'Concesionarias',
+				'keywords'      =>      'concesionaria grande ubicacion donde',
+                'exclude_words' =>      'motos barcos',
+                );
+        $busquedas[] = array(
+                'db_name'       =>      'Oportunidades',
+                'label'         =>      'Oportunidades',
+				'keywords'      =>      'comprar auto nuevo 0km',
+                'exclude_words' =>      'juguete ojala',
+                );
+
 
         // Cargo los helpers que voy a necesitar
         $this->load->helper('url');
@@ -531,6 +549,7 @@ class Social extends CI_Controller {
                 'item_link'     =>      'http://twitter.com'
                 );
 
+		$data['options'] = $busquedas;
         $data['sidebar'] = array(
                 'Sidebar 1'     =>      $sidebar1,
                 'Sidebar 2'     =>      $sidebar1,
@@ -579,15 +598,13 @@ class Social extends CI_Controller {
 
 		$busqueda= $this->input->post('lista-busqueda');
 
-		if ($busqueda != '' ){
-			$search_item = $this->doctrine->em->find('Entities\Search', $busqueda);
-			//echo "<pre>";
-			//print_r($search_item);
-			//echo "</pre>";
+		if ($this->input->post('lista-busqueda') != '' ){
+			echo "<pre>";
+			print_r($this->input->post());
+			echo "</pre>";
 			// si seleccionaron una busqueda, muestro formulario edit
-			$data['search_item'] = $search_item;
+			$this->load->view('templates/bootstrap/fluid_edit_search_form', $data);
 		}
-		$this->load->view('templates/bootstrap/fluid_edit_search_form', $data);
         $this->load->view('templates/bootstrap/fluid_footer', $data);
 
 	}
