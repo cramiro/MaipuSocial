@@ -78,6 +78,13 @@ class Item
     private $link;
 
     /**
+     * @var string $hash
+     *
+     * @Column(name="hash", type="string", length=40, unique=true)
+     */
+    private $hash;
+
+    /**
      * @var string $timestamp
      *
      * @Column(name="timestamp", type="datetime")
@@ -127,12 +134,23 @@ class Item
     private $user_link;
 
     /**
-     * @var Entities\Network
+     * @var boolean $seen
      *
-     * @ManyToOne(targetEntity="Entities\Network", inversedBy="items")
-     * @JoinColumns({
-     *   @JoinColumn(name="network_id", referencedColumnName="id")
-     * })
+     * @Column(name="seen", type="boolean")
+     */
+    private $seen;
+
+    /**
+     * @var boolean $deleted
+     *
+     * @Column(name="deleted", type="boolean")
+     */
+    private $deleted;
+
+    /**
+     * @var string $network
+     *
+     * @Column(name="network", type="string", length=20)
      */
     private $network;
 
@@ -161,6 +179,12 @@ class Item
     {
         $search->addToSearchResults($this);
         $this->search = $search;
+    }
+
+    public function unsetSearch($search)
+    {
+        $search->removeFromSearchResults($this);
+        $this->search = null;
     }
 
     public function getDescription()
@@ -243,6 +267,11 @@ class Item
         $this->link = $link;
     }
 
+    public function setHash($hash)
+    {
+        $this->hash = $hash;
+    }
+
     public function getTimestamp()
     {
         return $this->timestamp;
@@ -311,6 +340,26 @@ class Item
     public function setUserLink($user_link)
     {
         $this->user_link = $user_link;
+    }
+
+    public function getSeen()
+    {
+        return $this->seen;
+    }
+
+    public function setSeen($seen)
+    {
+        $this->seen = $seen;
+    }
+
+    public function getDeleted()
+    {
+        return $this->deleted;
+    }
+
+    public function setDeleted($deleted)
+    {
+        $this->deleted = $deleted;
     }
 
 }

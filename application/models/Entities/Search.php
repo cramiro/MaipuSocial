@@ -59,7 +59,7 @@ class Search
     /**
      * @var datetime $updated
      *
-     * @Column(name="updated", type="datetime")
+     * @Column(name="updated", type="datetime", nullable=true)
      */
     private $updated;
 
@@ -68,15 +68,9 @@ class Search
      */
     private $items;
 
-    /**
-     * @ManyToMany(targetEntity="Entities\Network")
-     */
-    private $networks;
-
     public function __construct()
     {
         $this->items = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->networks = new \Doctrine\Common\Collections\ArrayCollection();
     }
     
     public function getId()
@@ -139,17 +133,7 @@ class Search
         $this->updated = $updated;
     }
     
-    public function getNetworks()
-    {
-        return $this->networks;
-    }
-    
-    public function addNetwork($network)
-    {
-        $this->networks[] = $network;
-    }
-    
-    public function getItems()
+    public function getResults()
     {
         return $this->items;
     }
@@ -157,6 +141,11 @@ class Search
     public function addToSearchResults($item)
     {
         $this->items[] = $item;
+    }
+    
+    public function removeFromSearchResults($item)
+    {
+        $this->items->removeElement($item);
     }
 
     /**
@@ -178,4 +167,15 @@ class Search
     {
         return $this->is_temp;
     }
+
+    public function save_results($items_arr){
+        foreach ($items_arr as $item){
+            $item->setSeen(false);
+            $item->setDeleted(false);
+
+            $this->addItem($item);
+        }
+
+    }
+
 }
