@@ -73,7 +73,7 @@
 				}
 				$input_list .= $init;
 				$input_list .= "<div style='{$style}'><label>";
-				$input_list .= form_checkbox( $source, $source, FALSE);
+				$input_list .= form_checkbox( 'source[]', $source, FALSE);
 				$input_list .= "<span>{$source}</span>";
 				$input_list .= "</label></div>";
 				$input_list .= $end;

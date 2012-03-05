@@ -13,7 +13,7 @@
 
 				// Inicio div contenedor del item
 				$new_item = "<div class='span5'>";
-				//$new_item .= "<div id='myalert' class='alert-message block-message success fade in' data-alert='alert'>";
+				$new_item .= "<div id='myalert' class='alert-message block-message success fade in' data-alert='alert'>";
                 // Agrego el boton para cerrar el bloque
                 //$new_item .= "<a class='close' href='#'>×</a>";
 				$new_item .= "<h2>".$value['title']."</h2>";
@@ -43,13 +43,17 @@
 				//$buttons .= "  <button id='toSugar{$count}' class='btn danger'data-toggle='toggle'data-loading-text='importando...' onclick='importSugar({$count});' data-complete-text='Importado!'>A SugarCRM</button>";
 				$new_item .= form_close();
 				$new_item .= "</p>";
-				//$new_item .= "</div>"; // cierro div de bloque de alerta
+				$new_item .= "</div>"; // cierro div de bloque de alerta
 				$new_item .= "</div>"; // cierro div de span5
 				echo $new_item;
 //				echo "<\div>";
 				$count +=1;
 			}
 			echo "</div>";
+
+			// Imprimo los links de paginacion
+            echo $pagelinks;
+
 
 			/*
 			*	Panel para guardado de busqueda
@@ -62,6 +66,7 @@
 			$save_search .= "<button id='save-search' class='btn large success' data-toggle='toggle' data-loading-text='Guardando...' data-complete-text='Búsqueda Guardada.' onclick='saveSearch();'>Guardar Búsqueda!</button>";
 			$save_search .= "</div>";
 			echo $save_search;
+
 
 
 			?>

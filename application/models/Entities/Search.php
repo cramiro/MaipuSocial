@@ -137,7 +137,10 @@ class Search
     {
         return $this->items;
     }
-    
+    public function getSliceResults($offset, $lenght){
+
+		return array_slice($this->items->getValues(), $offset, $lenght);
+	}
     public function addToSearchResults($item)
     {
         $this->items[] = $item;

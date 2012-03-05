@@ -323,6 +323,9 @@ class Social extends CI_Controller {
 		// Cargo los helpers que voy a necesitar
 		$this->load->helper('url');		// Para .css y .js de los templates
 		$this->load->helper('form'); 	// Para formulario de busqueda
+		
+		// Cantidad de item por pagina
+		$slice = 15;
 
 		// Seteo variables que voy a usar en los templates
 		// Hacer un get de las primeras 3 networks
@@ -367,58 +370,95 @@ class Social extends CI_Controller {
         $data['brand'] = 'MaipuSocial';
         $data['username'] = 'user';
 
-		// Obtengo los valores de la busqueda
-        $search = $this->input->post('keywords');
+		if ( $this->uri->segment(3) === FALSE){
+			// Obtengo los valores de la busqueda
+	        $opciones = $this->input->post('source');
 
-        $opciones = array(
-            'facebook'	=> 	$this->input->post('facebook'),
-            'blogs' 	=> 	$this->input->post('blogs'),
-            'foros' 	=> 	$this->input->post('foros'),
-            );
-		
-		// Obtengo el id de los networks
-		// Armo un array con las networks seleccionadas
+	        // Me fijo si hay una busqueda con esas keywords. Sino, la creo y la guardo
+	        $search = $this->doctrine->em->getRepository('Entities\Search')->findOneBy(
+                    array("keywords" => $this->input->post('keywords'))
+                    );
 
-		/*
-		$networks = array();
-		foreach ($checkbox as $key => $val){
-			$id = $val;
-			$networks[] = $this->doctrine->em->find('Entities\Network', $id);
+			if(!$search){
+            	$search = new Entities\Search;
+            	$search->setIsTemp($this->input->post('is_temp'));
+	            $search->setKeywords($this->input->post('keywords'));
+	            $search->setName('nombre');
+	            $search->setDescription('descripcion');
+    	        $search->setExcludeWords($this->input->post('exclude_words'));
+	
+    	        $this->doctrine->em->persist($search);
+	
+    	        // Pido a la libreria que realice la busqueda
+        	    $this->load->library('search');
+            	$this->search->perform_search($this->doctrine->em, $search);
+        	}
+
+			$offset = 0;
+			$page = 0;
+
+			$searchID = $search->getID();
+
+
+		}else{
+			$searchID = $this->uri->segment(3);
+			$page = $this->uri->segment(4);
+			$search = $this->doctrine->em->find('Entities\Search', $searchID);
+			$offset = $page;
+
+
+
 		}
 
-        echo "<pre>";
-		echo $search;
-        print_r($opciones);
-        echo "</pre>";
-		*/
+		$this->load->library('pagination');
+        $config['base_url'] = base_url()."index.php/social/search/{$searchID}/";
+        $total = count($search->getResults()->getValues());
+        echo "Total -> {$total}";
+        $config['total_rows'] = $total;
+        $config['per_page'] = 15;
+		$config['uri_segment'] = '4';
+		
+		// Primera pagina
+		$config['first_tag_open'] = '<li>';
+		$config['first_tag_close'] = '</li>';
+		$config['first_link'] = 'Primera';
 
-		// Me fijo si hay una busqueda con esas keywords. Sino, la creo y la guardo
-        $search = $this->doctrine->em->getRepository('Entities\Search')->findOneBy(array("keywords" => $this->input->post('keywords')));
-        if(!$search){
-            $search = new Entities\Search;
-            $search->setIsTemp($this->input->post('is_temp'));
-            $search->setKeywords($this->input->post('keywords'));
-            $search->setName('nombre');
-            $search->setDescription('descripcion');
-            $search->setExcludeWords($this->input->post('exclude_words'));
+		// Siguiente
+		$config['next_link'] = '&rarr;';
+		$config['next_tag_open'] = '<li>';
+		$config['next_tag_close'] = '</li>';
+	
 
-            $this->doctrine->em->persist($search);
+		// Anterior
+		$config['prev_link'] = '&larr;';
+		$config['prev_tag_open'] = '<li class="prev">';
+		$config['prev_tag_close'] = '</li>';
 
-    		// Pido a la libreria que realice la busqueda
-            $this->load->library('search');
-	    	$this->search->perform_search($this->doctrine->em, $search);
-        }
+		// Ultima pagina
+		$config['last_link'] = 'Última';
+		$config['last_tag_open'] = '<li class="next">';
+		$config['last_tag_close'] = '</li>';
 
-        //echo "<pre>"; Doctrine\Common\Util\Debug::dump($result); echo "</pre>";
-		/*try {
-			$result = $result->items;
-		} catch (Exception $e) {
-		    echo 'Caught exception: ',  $e->getMessage(), "\n";
-			echo "<pre>"; print_r($result);echo "</pre>";
-		}*/
+		// Pagina actual
+		$config['cur_tag_open'] = '<li class="active"><a href="#">';
+		$config['cur_tag_close'] = '</a></li>';
+
+		// Digitos de pagina
+		$config['num_tag_open'] = '<li>';
+		$config['num_tag_close'] = '</li>';
+
+		$config['full_tag_open'] = "<div class='container'><div class='pagination center'><ul>";
+		$config['full_tag_close'] = '</ul></div></div>';
+
+
+
+        $this->pagination->initialize($config);
+        $pagelinks = $this->pagination->create_links();
+
 
 		// Recupero resultados y los paso a las vistas
-        $result = $search->getResults();
+        $result = $search->getSliceResults($offset, $slice);
+
 		$items = array();
 		foreach ($result as $key => $val){
 			$item = array();
@@ -447,6 +487,10 @@ class Social extends CI_Controller {
         // Actualizo los cambios (seen) en la base de datos
         $this->doctrine->em->flush();
 		$data['items'] = $items;
+		$data['pagelinks'] = $pagelinks;
+		echo "Search ID -> ".$search->getID();
+		$data['idSearch'] = $search->getID();
+		$data['page'] = $page;
 		$this->items = $items;
 		// Cargo las vistas
         $this->load->view('templates/bootstrap/fluid_header', $data);
