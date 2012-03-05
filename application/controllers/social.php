@@ -413,7 +413,6 @@ class Social extends CI_Controller {
 		$this->load->library('pagination');
         $config['base_url'] = base_url()."index.php/social/search/{$searchID}/";
         $total = count($search->getResults()->getValues());
-        echo "Total -> {$total}";
         $config['total_rows'] = $total;
         $config['per_page'] = 15;
 		$config['uri_segment'] = '4';
@@ -488,7 +487,7 @@ class Social extends CI_Controller {
         $this->doctrine->em->flush();
 		$data['items'] = $items;
 		$data['pagelinks'] = $pagelinks;
-		echo "Search ID -> ".$search->getID();
+		//echo "Search ID -> ".$search->getID();
 		$data['idSearch'] = $search->getID();
 		$data['page'] = $page;
 		$this->items = $items;
