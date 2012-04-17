@@ -2,6 +2,7 @@
 require_once ('application/libraries/SugarTalker.php');
 
 
+
 class Social extends CI_Controller {
 	var $items;
 	/**
