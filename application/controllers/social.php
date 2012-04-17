@@ -1,8 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 require_once ('application/libraries/SugarTalker.php');
 
-
-
 class Social extends CI_Controller {
 	var $items;
 	/**
@@ -145,10 +143,6 @@ class Social extends CI_Controller {
 
 		$instancia = new InstanciaSugar( $url, $user, $clave, $modules);
 
-		//echo "<pre>";
-        //print_r($instancia);
-        //echo "</pre>";
-
         // Genero consulta para ver obtener encuesta
 		$tipo_objeto = $this->input->post('objecttype');
 		if ( $tipo_objeto == 'case' ){
@@ -188,7 +182,6 @@ class Social extends CI_Controller {
 	public function index()
 	{
        	/*$search = $this->doctrine->em->find('Entities\Search', 1);
-		//echo "<pre>"; print_r($search);	echo "</pre>";
         $this->perform_search($search);
 		return;*/
 		$this->load->helper('url');
