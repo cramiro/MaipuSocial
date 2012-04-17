@@ -24,7 +24,15 @@ class Social extends CI_Controller {
         //$this->load->helper('form');
         //$this->load->library('form_validation');
 
-        $search = new Entities\Search;
+		$search_id = $this->input->post('search-id');
+
+        if ( $search_id == '' ){
+            // Si no tiene id => creo nueva busqueda
+            $search = new Entities\Search;
+        }else{
+            // Si tiene id => lo busco para actualizar
+            $search = $this->doctrine->em->find('Entities\Search', $search_id);
+        }
         $search->setIsTemp($this->input->post('is_temp'));
         $search->setKeywords($this->input->post('keywords'));
         $search->setExcludeWords($this->input->post('exclude_words'));
