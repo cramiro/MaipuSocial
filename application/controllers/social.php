@@ -1,6 +1,7 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 require_once ('application/libraries/SugarTalker.php');
 
+//Clase principal
 class Social extends CI_Controller {
 	var $items;
 	/**
