@@ -115,14 +115,14 @@ class Item
     /**
      * @var string $user_id
      *
-     * @Column(name="user_id", type="string", length=20)
+     * @Column(name="user_id", type="string", length=20, nullable=true)
      */
     private $user_id;
 
     /**
      * @var string $user_image
      *
-     * @Column(name="user_image", type="string", length=80)
+     * @Column(name="user_image", type="string", length=80, nullable=true)
      */
     private $user_image;
 

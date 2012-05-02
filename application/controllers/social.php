@@ -474,6 +474,7 @@ class Social extends CI_Controller {
 			}else{
 				$item['title'] = $val->getTitle();
 				$item['description'] = $val->getDescription();
+				$item['user'] = $val->getUser();
 			}
 			$item['link'] = $val->getLink();
             $item['user_link'] = $val->getUserLink();
