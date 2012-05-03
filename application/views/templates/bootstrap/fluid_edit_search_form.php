@@ -1,26 +1,28 @@
 				<!-- Example row of columns -->
+			<div class='span12'>
 			<?php 
-
-				echo "<div class='span12'>";
-				$form =  form_open('social/save_search');
-
+				echo form_open('social/save_search');
+				echo form_hidden('search_id', $busqueda->getId());
+			?>
+			<div class='clearfix'>
+			<label for='search-name'>Nombre</label>
+			<div class='input'>
+			<?php
 				$name = 'Nombre...';
 				$data = array(
 						'name'		=>		'search-name',
 						'id'		=>		'search-name',
-						'value'		=>		$name,
+						'value'		=>		$busqueda->getName(),
 						'size'		=>		'30',
 						'class'		=>		'xlarge',
 						);
-
-				$dropdown = "<div class='clearfix'>";
-				$dropdown .= "<label for='search-name'>Nombre</label>";
-				$dropdown .= "<div class='input'>";
-				$dropdown .= form_input($data);
-				$dropdown .= "</div></div>"; // cierro class input y clearfix
-
-				$form .= $dropdown;
-			
+			echo form_input($data);
+			?>
+			</div> <!-- end input -->
+			</div>
+			<div class='clearfix'><label for='textarea'>Palabras deseadas</label>
+			<div class='input'>
+			<?php		
 
 				$descripcion = 'Una descripcion aqui...';
 				$descripcion .= ' ...';
@@ -31,33 +33,34 @@
 						'rows'		=>		'3',
 						'id'		=>		'keywords',
 						'name'		=>		'keywords',
-						'value'		=>		$descripcion,
+						'value'		=>		$busqueda->getKeywords(),
 						);
+				echo form_textarea($data);
+		?>
 
-				$textarea = "<div class='clearfix'><label for='textarea'>Palabras deseadas</label>";
-				$textarea .= "<div class='input'>";
-				$textarea .= form_textarea($data);
-				$textarea .= "<span class='help-block'>Escriba las palabras clave a buscar</span>";
-				$textarea .= "</div>";
-
-				$form .= $textarea;
-
+		<span class='help-block'>Escriba las palabras clave a buscar</span>
+		</div>
+		
+		<div class='clearfix'><label for='textarea'>Palabras a excluir</label>
+		<div class='input'>
+		<?php
 				// Textarea para palabras no deseadas
                 $data = array(
                         'class'     =>      'xxlarge',
                         'rows'      =>      '3',
                         'id'        =>      'exclude_words',
                         'name'      =>      'exclude_words',
-                        'value'     =>      $descripcion,
+                        'value'     =>      $busqueda->getExcludeWords(),
                         );
 
-                $textarea = "<div class='clearfix'><label for='textarea'>Palabras a excluir</label>";
-                $textarea .= "<div class='input'>";
-                $textarea .= form_textarea($data);
-                $textarea .= "<span class='help-block'>Escriba las palabras a excluir en la búsqueda</span>";
-                $textarea .= "</div>";
-
-                $form .= $textarea;
+                echo form_textarea($data);
+		?>
+		
+		<span class='help-block'>Escriba las palabras a excluir en la búsqueda</span>
+        </div>
+		
+		<div class='actions'>
+		<?php
 				// Definiciones para el boton de importacion a sugar
 				$data = array( 
 						'class' => 'btn danger',
@@ -65,14 +68,13 @@
 						'value' => 'Guardar',
 						'name' => 'objectsend',
 						);
-				$actions = "<div class='actions'>";
-				$actions .= form_submit($data);
-				$actions .= " <a class='btn' href='http://localhost/social/index.php/social/admin'>Cancelar<a>";
 
-				$form .= $actions;
-				$form .= form_close();
-				$form .= "</p></div>";
-				echo $form;
-				echo "<div>";
-			?>
+				echo form_submit($data);
+		?>
+		<a class='btn' href='http://localhost/social/index.php/social/admin'>Cancelar<a>
+
+		<?php form_close(); ?>
+		</p>
+		</div>
+		<div>
         <!-- Example row of columns -->

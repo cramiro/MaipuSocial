@@ -35,24 +35,18 @@
       <div class="topbar-inner">
         <div class="container-fluid">
           <a class="brand" href="#"><?php echo $brand?></a>
-			<?php 
-			$list = "<ul class='nav'>";
-			foreach ($navigator as $name => $option){
-				if ( 'TRUE' === $option['active']){
-					$list .= "<li class='active'><a href='{$option['link']}'>{$name}</a></li>";
-				}else{	
-					$list .= "<li class=''><a href='{$option['link']}'>{$name}</a></li>";
-				}
-			}
-			$list .= "</ul>";
-			echo $list;
-			?>
-          <!--<ul class="nav">
-            <li class="active"><a href="#">Home</a></li>
-            <li><a href=" echo site_url('social/saved_searches')">Guardadas</a></li>
-            <li><a href=" echo site_url('social/admin')">Admin</a></li>
-          </ul>-->
-			
+          <ul class="nav">
+          	
+          	<li class="<?php echo ($here == 'Home'? 'active' : '');?>">
+          		<a href="<?php echo site_url('social');?>">Home</a>
+          	</li>
+          	<li class="<?php echo ($here == 'Guardadas' ? 'active' : '');?>">
+          		<a href="<?php echo site_url('social/guardadas');?>">Guardadas</a>
+          	</li>
+          	<li class="<?php echo ($here == 'Admin' ? 'active': '');?>">
+          		<a href="<?php echo site_url('social/admin');?>">Admin</a>
+          	</li>
+          </ul>			
           <p class="pull-right">Logged in as <a href="#"><?php echo $username?></a></p>
         </div>
       </div>

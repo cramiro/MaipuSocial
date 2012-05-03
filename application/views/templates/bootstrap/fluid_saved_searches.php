@@ -6,19 +6,15 @@
 			<div class="clarfix">
             <div class="span8 offset6">
 			<?php 
-				$form = form_open('social/search');
-	
-				// Input para la busqueda
-				$js = "id='xlInput'";
-		
+				echo  form_open('social/search');
+
 				$opciones = array();
 				foreach ($options as $op){
-					$opciones[$op['db_name']] = $op['label'];
+					$opciones[$op['id']] = $op['name'];
 				}
 
-				$form .= form_dropdown('lista-busqueda', $opciones, $js);
-
-
+				echo form_dropdown('lista-busqueda', $opciones);
+				
 				// Boton para hacer submit
 				 $data_input = array(
                         'name' => 'submit-button',
@@ -26,14 +22,12 @@
                         'class' => 'btn primary',
                         'value' => 'Buscar',
                     );
-                $form .= ' '.form_submit($data_input);
-				
-				$form .= " <div id='more-options' class='btn small info' 
-						OnClick='optionsButton();' value='show'>Mas...</div>";
-			// Boton para hacer submit
-				echo $form;
-
-			?>	
+                echo ' '.form_submit($data_input);
+			?>
+		<div id="more-options" class="btn small info" 
+		OnClick="optionsButton();" value="show">Mas...</div>
+		
+		
             <span class="help-block">Seleccione una búsqueda guardada...</span>
 			</div> <!-- span8 offset6-->	
 
