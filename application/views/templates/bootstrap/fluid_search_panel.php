@@ -14,6 +14,7 @@
 						'class' => 'xlarge error',
 						'type' => 'text',
 						'size' => '80',
+						'value' => $input_value,
 					);
 				$form .= form_input($data_input);
 
@@ -37,7 +38,7 @@
 			<!-- Lista de opciones avanzadas. Oculta por defecto -->
 			<?php 
 			$style = "float:left;width:125px;whitespace:nowrap;font-size:15px;padding:0 0 5px 0;";
-			$sources = array(
+/*			$sources = array(
 				'facebook',		'twitter',		'youtube',		'ask',		'backtype',
 				'bbc',			'bebo',			'bing',			'bleeper',	'blinkx',
 				'blip',			'blogcatalog',	'blogdigger',	'bloggy',	'bloglines',
@@ -55,7 +56,7 @@
 				'twitxr',		'webshots',		'wikio',		'wordpress',	'yahoo',
 				'yahoo news',	'youare',		'youtube',		'zoomr'
 				);
-
+*/
 			$input_list = "<div id='search-options' class='span12' style='display:none;'>";
 			$input_list .= "<div class='inputs-list'>";
 			$input_list .= "<div class='row' style='margin-left:0px;'>"; //para la lista
@@ -70,7 +71,7 @@
 				}
 				$input_list .= $init;
 				$input_list .= "<div style='{$style}'><label>";
-				$input_list .= form_checkbox( 'source[]', $source, FALSE);
+				$input_list .= form_checkbox( 'source[]', $source, !$sources_sess or in_array($source, $sources_sess));
 				$input_list .= "<span>{$source}</span>";
 				$input_list .= "</label></div>";
 				$input_list .= $end;

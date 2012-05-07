@@ -4,6 +4,16 @@ require_once ('application/libraries/SugarTalker.php');
 //Clase principal
 class Social extends CI_Controller {
 	var $items;
+
+    function _networks(){
+        $networks = $this->doctrine->em->getRepository('Entities\Network')->findBy(array());
+        $result = array();
+        foreach ($networks as $network){
+            $result[] = $network->getName();
+        }
+        return $result;
+    }
+
 	/**
 	 * Index Page for this controller.
 	 *
@@ -181,6 +191,8 @@ class Social extends CI_Controller {
             $i++;
         }
 
+        $data['sources'] = $this->_networks();
+
 		$this->load->view('templates/bootstrap/fluid_header', $data);
         $this->load->view('templates/bootstrap/fluid_search_panel', $data);
         //$this->load->view('templates/bootstrap/fluid_items', $data);
@@ -258,6 +270,10 @@ class Social extends CI_Controller {
         $data['brand'] = 'MaipuSocial';
         $data['username'] = 'user';
 
+        $data['sources_sess'] = $options = $this->session->userdata('source');
+        $data['sources'] = $this->_networks();
+        $data['input_value'] = '';
+
         //$this->load->view('templates/bootstrap/fluid', $data);
         $this->load->view('templates/bootstrap/fluid_header', $data);
 		$this->load->view('templates/bootstrap/fluid_search_panel', $data);
@@ -323,7 +339,8 @@ class Social extends CI_Controller {
     }
 
 	public function search(){
-
+//echo "<pre>"; var_dump($this->session->userdata('source')); echo "</pre>";
+//echo "<pre>"; var_dump($this->session->userdata('keywords')); echo "</pre>";
 		// Cargo los helpers que voy a necesitar
 		$this->load->helper('url');		// Para .css y .js de los templates
 		$this->load->helper('form'); 	// Para formulario de busqueda
@@ -376,7 +393,10 @@ class Social extends CI_Controller {
 
 		if ( $this->uri->segment(3) === FALSE){
 			// Obtengo los valores de la busqueda
-	        $opciones = $this->input->post('source');
+	        $options = $this->input->post('source');
+            // La guardo en la sesion
+            $this->session->set_userdata('source', $options);
+            $this->session->set_userdata('keywords', $this->input->post('keywords'));
 
 	        // Me fijo si hay una busqueda con esas keywords. Sino, la creo y la guardo
 	        $search = $this->doctrine->em->getRepository('Entities\Search')->findOneBy(
@@ -402,6 +422,7 @@ class Social extends CI_Controller {
 			$page = 0;
 
 			$searchID = $search->getID();
+            $this->session->set_userdata('search_id', $searchID);
 
 
 		}else{
@@ -413,10 +434,11 @@ class Social extends CI_Controller {
 
 
 		}
+        $options = $this->session->userdata('source');
 
 		$this->load->library('pagination');
         $config['base_url'] = base_url()."index.php/social/search/{$searchID}/";
-        $total = count($search->getResults()->getValues());
+        $total = count($search->getResults($this->session->userdata('source')));
         $config['total_rows'] = $total;
         $config['per_page'] = 15;
 		$config['uri_segment'] = '4';
@@ -460,7 +482,7 @@ class Social extends CI_Controller {
 
 
 		// Recupero resultados y los paso a las vistas
-        $result = $search->getSliceResults($offset, $slice);
+        $result = $search->getSliceResults($offset, $slice, $this->session->userdata('source'));
 
 		$items = array();
 		foreach ($result as $key => $val){
@@ -496,6 +518,10 @@ class Social extends CI_Controller {
 		$data['idSearch'] = $search->getID();
 		$data['page'] = $page;
 		$this->items = $items;
+
+        $data['sources'] = $this->_networks();
+        $data['sources_sess'] = $options;
+        $data['input_value'] = $this->session->userdata('keywords');
 		// Cargo las vistas
         $this->load->view('templates/bootstrap/fluid_header', $data);
 		$this->load->view('templates/bootstrap/fluid_search_panel', $data);

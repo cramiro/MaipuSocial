@@ -133,13 +133,25 @@ class Search
         $this->updated = $updated;
     }
     
-    public function getResults()
+    public function getResults($networks = array())
     {
-        return $this->items;
+        $list = array();
+        foreach ($this->items->getValues() as $item){
+            if(count($networks) == 0 or !$networks or (is_array($networks) and in_array(ucfirst($item->getNetwork()), $networks))){
+                $list[] = $item;
+            }
+        }
+		return $list;
     }
-    public function getSliceResults($offset, $lenght){
 
-		return array_slice($this->items->getValues(), $offset, $lenght);
+    public function getSliceResults($offset, $lenght, $networks = array()){
+        $list = array();
+        foreach ($this->items->getValues() as $item){
+            if(count($networks) == 0 or !$networks or (is_array($networks) and in_array(ucfirst($item->getNetwork()), $networks))){
+                $list[] = $item;
+            }
+        }
+		return array_slice($list, $offset, $lenght);
 	}
     public function addToSearchResults($item)
     {
