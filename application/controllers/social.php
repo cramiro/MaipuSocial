@@ -35,7 +35,8 @@ class Social extends CI_Controller {
         //$this->load->helper('form');
         //$this->load->library('form_validation');
 
-		$search_id = $this->input->post('search-id');
+		$search_id = $this->input->post('search_id');
+		echo "Search id : {$search_id}";
 
         if ( $search_id == '' ){
             // Si no tiene id => creo nueva busqueda
@@ -45,6 +46,7 @@ class Social extends CI_Controller {
             $search = $this->doctrine->em->find('Entities\Search', $search_id);
         }
         $search->setIsTemp($this->input->post('is_temp'));
+        $search->setName($this->input->post('search-name'));
         $search->setKeywords($this->input->post('keywords'));
         $search->setExcludeWords($this->input->post('exclude_words'));
         $search->setUpdated(new Datetime());
@@ -112,45 +114,11 @@ class Social extends CI_Controller {
     }
 
 	public function send(){
-		$this->load->helper('url');
         $this->load->helper('form');
 
+		$data['sidebar'] = $this->sidebar();
 
-		$sidebar1['item1'] = array(
-                'item_name'     =>      'Facebook',
-                'item_link'     =>      'http://facebook.com'
-                );
-        $sidebar1['item2'] = array(
-                'item_name'     =>      'Yahoo!',
-                'item_link'     =>      'http://yahoo.com'
-                );
-        $sidebar1['item3'] = array(
-                'item_name'     =>      'Twitter',
-                'item_link'     =>      'http://twitter.com'
-                );
-
-        $data['sidebar'] = array(
-                'Sidebar 1'     =>      $sidebar1,
-                'Sidebar 2'     =>      $sidebar1,
-                'Sidebar 3'     =>      $sidebar1,
-                );
-
-		$navigator = array(
-                'Home'      =>  array(
-                                'link'      =>  site_url('social'),
-                                'active'    =>  'TRUE',
-                                ),
-                'Guardadas'      =>  array(
-                                'link'      =>  site_url('social/guardadas'),
-                                'active'    =>  'FALSE',
-                                ),
-                'Admin'      =>  array(
-                                'link'      =>  site_url('social/admin'),
-                                'active'    =>  'FALSE',
-                                ),
-                );
-
-        $data['navigator'] = $navigator;
+        $data['here'] = 'Home';
         $data['brand'] = 'MaipuSocial';
         $data['username'] = 'user';
 
@@ -232,41 +200,9 @@ class Social extends CI_Controller {
 			$i++;
 		}*/
 
-		$sidebar1['item1'] = array(
-                'item_name'     =>      'Facebook',
-                'item_link'     =>      'http://facebook.com'
-                );
-        $sidebar1['item2'] = array(
-                'item_name'     =>      'Yahoo!',
-                'item_link'     =>      'http://yahoo.com'
-                );
-        $sidebar1['item3'] = array(
-                'item_name'     =>      'Twitter',
-                'item_link'     =>      'http://twitter.com'
-                );
+		$data['sidebar'] = $this->sidebar();
 
-        $data['sidebar'] = array(
-                'Sidebar 1'     =>      $sidebar1,
-                'Sidebar 2'     =>      $sidebar1,
-                'Sidebar 3'     =>      $sidebar1,
-                );
-
-		$navigator = array(
-                'Home'      =>  array(
-                                'link'      =>  site_url('social'),
-                                'active'    =>  'TRUE',
-                                ),
-                'Guardadas'      =>  array(
-                                'link'      =>  site_url('social/guardadas'),
-                                'active'    =>  'FALSE',
-                                ),
-                'Admin'      =>  array(
-                                'link'      =>  site_url('social/admin'),
-                                'active'    =>  'FALSE',
-                                ),
-                );
-
-        $data['navigator'] = $navigator;
+        $data['here'] = 'Home';
         $data['brand'] = 'MaipuSocial';
         $data['username'] = 'user';
 
@@ -286,41 +222,9 @@ class Social extends CI_Controller {
         $this->load->helper('url');
 
         $data['title'] = 'News archive';
-		$sidebar1['item1'] = array(
-				'item_name' 	=> 		'Facebook',
-				'item_link'  	=>		'http://facebook.com'
-				);
-		$sidebar1['item2'] = array(
-                'item_name'     =>      'Yahoo!',
-                'item_link'     =>      'http://yahoo.com'
-                );
-		$sidebar1['item3'] = array(
-                'item_name'     =>      'Twitter',
-                'item_link'     =>      'http://twitter.com'
-                );
+		$data['sidebar'] = $this->sidebar();
 
-		$data['sidebar'] = array(
-				'Sidebar 1'		=> 		$sidebar1,
-				'Sidebar 2'		=>		$sidebar1,
-                'Sidebar 3'     =>      $sidebar1,
-				);
-
-		$navigator = array(
-                'Home'      =>  array(
-                                'link'      =>  site_url('social'),
-                                'active'    =>  'FALSE',
-                                ),
-                'Guardadas'      =>  array(
-                                'link'      =>  site_url('social/guardadas'),
-                                'active'    =>  'TRUE',
-                                ),
-                'Admin'      =>  array(
-                                'link'      =>  site_url('social/admin'),
-                                'active'    =>  'FALSE',
-                                ),
-                );
-
-        $data['navigator'] = $navigator;
+        $data['here'] = 'Guardadas';
         $data['brand'] = 'MaipuSocial';
         $data['username'] = 'user';
 
@@ -335,14 +239,12 @@ class Social extends CI_Controller {
         }else{
             redirect('social');
         }
-
     }
-
+	
 	public function search(){
 //echo "<pre>"; var_dump($this->session->userdata('source')); echo "</pre>";
 //echo "<pre>"; var_dump($this->session->userdata('keywords')); echo "</pre>";
 		// Cargo los helpers que voy a necesitar
-		$this->load->helper('url');		// Para .css y .js de los templates
 		$this->load->helper('form'); 	// Para formulario de busqueda
 		
 		// Cantidad de item por pagina
@@ -353,41 +255,17 @@ class Social extends CI_Controller {
 		// Hacer un get de las primeras 3 busquedas guardas
 		// Crear links a SugarCRM y Zimbra:q
 
-		$sidebar1['item1'] = array(
-                'item_name'     =>      'Facebook',
-                'item_link'     =>      'http://facebook.com'
-                );
-        $sidebar1['item2'] = array(
-                'item_name'     =>      'Yahoo!',
-                'item_link'     =>      'http://yahoo.com'
-                );
-        $sidebar1['item3'] = array(
-                'item_name'     =>      'Twitter',
-                'item_link'     =>      'http://twitter.com'
-                );
+		$data['sidebar'] = $this->sidebar();
 
-        $data['sidebar'] = array(
-                'Sidebar 1'     =>      $sidebar1,
-                'Sidebar 2'     =>      $sidebar1,
-                'Sidebar 3'     =>      $sidebar1,
-                );
-
-		$navigator = array(
-                'Home'      =>  array(
-                                'link'      =>  site_url('social'),
-                                'active'    =>  'FALSE',
-                                ),
-                'Guardadas'      =>  array(
-                                'link'      =>  site_url('social/guardadas'),
-                                'active'    =>  'TRUE',
-                                ),
-                'Admin'      =>  array(
-                                'link'      =>  site_url('social/admin'),
-                                'active'    =>  'FALSE',
-                                ),
-                );
-
-        $data['navigator'] = $navigator;
+		$esGuardada = FALSE;
+		if ($this->input->post('lista-busqueda')){
+			$esGuardada = TRUE;
+			$here = 'Guardadas';
+			$data['options'] = $this->getSavedSearches();
+		}else{
+			$here = 'Home';
+		}
+        $data['here'] = $here;
         $data['brand'] = 'MaipuSocial';
         $data['username'] = 'user';
 
@@ -398,12 +276,19 @@ class Social extends CI_Controller {
             $this->session->set_userdata('source', $options);
             $this->session->set_userdata('keywords', $this->input->post('keywords'));
 
-	        // Me fijo si hay una busqueda con esas keywords. Sino, la creo y la guardo
-	        $search = $this->doctrine->em->getRepository('Entities\Search')->findOneBy(
+			if ($this->input->post('lista-busqueda')){
+				$search = $this->doctrine->em->getRepository('Entities\Search')->findOneBy(
+                    array("id" => $this->input->post('lista-busqueda'))  );
+                echo "keyword -> ".$search->getKeywords();
+			
+			}else{
+	        	// Me fijo si hay una busqueda con esas keywords. Sino, la creo y la guardo
+	        	$search = $this->doctrine->em->getRepository('Entities\Search')->findOneBy(
                     array("keywords" => $this->input->post('keywords'))
                     );
-
+			}
 			if(!$search){
+				echo "Nueva busqueda";
             	$search = new Entities\Search;
             	$search->setIsTemp($this->input->post('is_temp'));
 	            $search->setKeywords($this->input->post('keywords'));
@@ -420,7 +305,6 @@ class Social extends CI_Controller {
 
 			$offset = 0;
 			$page = 0;
-
 			$searchID = $search->getID();
             $this->session->set_userdata('search_id', $searchID);
 
@@ -430,8 +314,6 @@ class Social extends CI_Controller {
 			$page = $this->uri->segment(4);
 			$search = $this->doctrine->em->find('Entities\Search', $searchID);
 			$offset = $page;
-
-
 
 		}
         $options = $this->session->userdata('source');
@@ -474,8 +356,6 @@ class Social extends CI_Controller {
 
 		$config['full_tag_open'] = "<div class='container'><div class='pagination center'><ul>";
 		$config['full_tag_close'] = '</ul></div></div>';
-
-
 
         $this->pagination->initialize($config);
         $pagelinks = $this->pagination->create_links();
@@ -524,75 +404,38 @@ class Social extends CI_Controller {
         $data['input_value'] = $this->session->userdata('keywords');
 		// Cargo las vistas
         $this->load->view('templates/bootstrap/fluid_header', $data);
-		$this->load->view('templates/bootstrap/fluid_search_panel', $data);
+		if ($esGuardada){
+	        $this->load->view('templates/bootstrap/fluid_saved_searches', $data);
+		}else{
+			$this->load->view('templates/bootstrap/fluid_search_panel', $data);
+		}
         $this->load->view('templates/bootstrap/fluid_items', $data);
         $this->load->view('templates/bootstrap/fluid_footer', $data);
         //$data['social_items']= $this->social_model->get_search();
     }
 
 	public function admin(){
+		
+		$searches = $this->doctrine->em->getRepository('Entities\Search')->findAll();
 		$busquedas = array();
-        $busquedas[] = array(
-                'db_name'       =>      'Mundo Maipu',
-                'label'         =>      'Mundo Maipu',
-				'keywords'		=>		'mundo maipu gm verano carlos paz',
-				'exclude_words'	=>		'san cristobal seguros',
-                );
-        $busquedas[] = array(
-                'db_name'       =>      'Concesionarias',
-                'label'         =>      'Concesionarias',
-				'keywords'      =>      'concesionaria grande ubicacion donde',
-                'exclude_words' =>      'motos barcos',
-                );
-        $busquedas[] = array(
-                'db_name'       =>      'Oportunidades',
-                'label'         =>      'Oportunidades',
-				'keywords'      =>      'comprar auto nuevo 0km',
-                'exclude_words' =>      'juguete ojala',
-                );
-
+		foreach ($searches as $search)
+		{
+			$new = array(
+				'id' 	=> $search->getId(),
+				'name'	=> $search->getName(),
+				);
+			$busquedas[] = $new;
+		
+		}
 
         // Cargo los helpers que voy a necesitar
         $this->load->helper('url');
         $this->load->helper('form');
 
-        // Seteo variables que voy a usar en los templates
-        $sidebar1['item1'] = array(
-                'item_name'     =>      'Facebook',
-                'item_link'     =>      'http://facebook.com'
-                );
-        $sidebar1['item2'] = array(
-                'item_name'     =>      'Yahoo!',
-                'item_link'     =>      'http://yahoo.com'
-                );
-        $sidebar1['item3'] = array(
-                'item_name'     =>      'Twitter',
-                'item_link'     =>      'http://twitter.com'
-                );
-
 		$data['options'] = $busquedas;
-        $data['sidebar'] = array(
-                'Sidebar 1'     =>      $sidebar1,
-                'Sidebar 2'     =>      $sidebar1,
-                'Sidebar 3'     =>      $sidebar1,
-                );
+		$data['sidebar'] = $this->sidebar();
 
-        $navigator = array(
-                'Home'      =>  array(
-                                'link'      =>  site_url('social'),
-                                'active'    =>  'FALSE',
-                                ),
-                'Guardadas'      =>  array(
-                                'link'      =>  site_url('social/guardadas'),
-                                'active'    =>  'FALSE',
-                                ),
-                'Admin'      =>  array(
-                                'link'      =>  site_url('social/admin'),
-                                'active'    =>  'TRUE',
-                                ),
-                );
-
-        $data['navigator'] = $navigator;
+        $data['here'] = 'Admin';
         $data['brand'] = 'MaipuSocial';
         $data['username'] = 'user';
 
@@ -600,12 +443,13 @@ class Social extends CI_Controller {
         $this->load->view('templates/bootstrap/fluid_header', $data);
         $this->load->view('templates/bootstrap/fluid_edit_search', $data);
 
-		$busqueda= $this->input->post('lista-busqueda');
+		$busqueda = $this->input->post('lista-busqueda');
 
 		if ($this->input->post('lista-busqueda') != '' ){
-			echo "<pre>";
-			print_r($this->input->post());
-			echo "</pre>";
+
+			$search = $this->doctrine->em->getRepository('Entities\Search')->findOneBy(
+                    array("id" => $this->input->post('lista-busqueda')) );
+            $data['busqueda'] = $search;
 			// si seleccionaron una busqueda, muestro formulario edit
 			$this->load->view('templates/bootstrap/fluid_edit_search_form', $data);
 		}
@@ -613,7 +457,84 @@ class Social extends CI_Controller {
 
 	}
 
+	private function sidebar(){
+		$searches = $this->getSavedSearches();
+		
+		
+		// Seteo variables que voy a usar en los templates
+        $sidebar1['item1'] = array(
+                'item_name'     =>      $searches[0]['name'],
+                'item_link'     =>      'http://facebook.com'
+                );
+        $sidebar1['item2'] = array(
+                'item_name'     =>      $searches[1]['name'],
+                'item_link'     =>      'http://yahoo.com'
+                );
+        $sidebar1['item3'] = array(
+                'item_name'     =>      $searches[2]['name'],
+                'item_link'     =>      'http://twitter.com'
+                );
 
+		// Seteo variables que voy a usar en los templates
+        $sidebar2['item1'] = array(
+                'item_name'     =>      'Facebook',
+                'item_link'     =>      'http://facebook.com'
+                );
+        $sidebar2['item2'] = array(
+                'item_name'     =>      'Twitter',
+                'item_link'     =>      'http://twitter.com'
+                );
+        $sidebar2['item3'] = array(
+                'item_name'     =>      'YouTube',
+                'item_link'     =>      'http://youtube.com'
+                );
+
+		// Seteo variables que voy a usar en los templates
+        $sidebar3['item1'] = array(
+                'item_name'     =>      'SugarCRM',
+                'item_link'     =>      'http://sugarcrm.amaipu.com.ar'
+                );
+        $sidebar3['item2'] = array(
+                'item_name'     =>      'Zimbra',
+                'item_link'     =>      'http://zimbra.amaipu.com.ar'
+                );
+		
+        return array(
+                'Búsquedas Guardadas'     =>      $sidebar1,
+                'Redes Sociales'     =>      $sidebar2,
+                'Mundo Maipú'     =>      $sidebar3,
+                );
+	}
+	
+	private function getSavedSearches(){
+		$searches = $this->doctrine->em->getRepository('Entities\Search')->findAll();
+		$busquedas = array();
+		foreach ($searches as $search)
+		{
+			$new = array(
+				'id' 	=> $search->getId(),
+				'name'	=> $search->getName(),
+				);
+			$busquedas[] = $new;
+		
+		}
+		return $busquedas;
+	
+	}
+	public function delete( $searchID = NULL){
+		if (NULL == $searchID){
+			redirect ('/social');
+			return;
+		}
+		
+		$search = $this->doctrine->em->getRepository('Entities\Search')->findOneBy(
+                    array("id" => $searchID) );
+        $this->doctrine->em->remove($search);
+		$this->doctrine->em->flush();
+		
+		redirect ('/social/admin');
+	}
+	
 	public function guardadas(){
 		/* Esta funcion se encarga de cargar todas las busquedas
 		guardas y mostrarlas en forma de lista o con desplegable
@@ -622,63 +543,17 @@ class Social extends CI_Controller {
 		Tambien puede permitir crear y guardar nuevas busquedas.
 
 		*/
-		$busquedas = array();
-		$busquedas[] = array(
-				'db_name'		=>		'Mundo Maipu',
-				'label'			=>		'Mundo Maipu'
-				);
-		$busquedas[] = array(
-				'db_name'		=>		'Concesionarias',
-				'label'			=>		'Concesionarias'
-				);
-		$busquedas[] = array(
-				'db_name'		=>		'Oportunidades',
-				'label'			=>		'Oportunidades'
-				);
 
-
+		$data['options'] = $this->getSavedSearches();
 		// Cargo los helpers que voy a necesitar
 		$this->load->helper('url');
 		$this->load->helper('form');
-
-		// Seteo variables que voy a usar en los templates
-        $sidebar1['item1'] = array(
-                'item_name'     =>      'Facebook',
-                'item_link'     =>      'http://facebook.com'
-                );
-        $sidebar1['item2'] = array(
-                'item_name'     =>      'Yahoo!',
-                'item_link'     =>      'http://yahoo.com'
-                );
-        $sidebar1['item3'] = array(
-                'item_name'     =>      'Twitter',
-                'item_link'     =>      'http://twitter.com'
-                );
-		$data['options'] = $busquedas;
-        $data['sidebar'] = array(
-                'Sidebar 1'     =>      $sidebar1,
-                'Sidebar 2'     =>      $sidebar1,
-                'Sidebar 3'     =>      $sidebar1,
-                );
-
-		$navigator = array(
-				'Home'		=>	array(
-								'link'		=>	site_url('social'),
-								'active'	=> 	'FALSE',
-								),
-				'Guardadas'      =>  array(
-                                'link'      =>  site_url('social/guardadas'),
-                                'active'    =>  'TRUE',
-                                ),
-				'Admin'      =>  array(
-                                'link'      =>  site_url('social/admin'),
-                                'active'    =>  'FALSE',
-                                ),
-				);
 		
-		$data['navigator'] = $navigator;
+        $data['sidebar'] = $this->sidebar();
+		$data['here'] = 'Guardadas';
 		$data['brand'] = 'MaipuSocial';
 		$data['username'] = 'user';
+		
 		// Cargo las vistas
 		$this->load->view('templates/bootstrap/fluid_header', $data);
         $this->load->view('templates/bootstrap/fluid_saved_searches', $data);
@@ -692,66 +567,12 @@ class Social extends CI_Controller {
 		$this->load->helper('url');
         $this->load->helper('form');
 
-        // Seteo variables que voy a usar en los templates
-        $sidebar1['item1'] = array(
-                'item_name'     =>      'Facebook',
-                'item_link'     =>      'http://facebook.com'
-                );
-        $sidebar1['item2'] = array(
-                'item_name'     =>      'Yahoo!',
-                'item_link'     =>      'http://yahoo.com'
-                );
-        $sidebar1['item3'] = array(
-                'item_name'     =>      'Twitter',
-                'item_link'     =>      'http://twitter.com'
-                );
-        $data['sidebar'] = array(
-                'Sidebar 1'     =>      $sidebar1,
-                'Sidebar 2'     =>      $sidebar1,
-                'Sidebar 3'     =>      $sidebar1,
-                );
+        $data['sidebar'] = $this->sidebar();
 
-		$navigator = array(
-                'Home'      =>  array(
-                                'link'      =>  site_url('social'),
-                                'active'    =>  'FALSE',
-                                ),
-                'Guardadas'      =>  array(
-                                'link'      =>  site_url('social/guardadas'),
-                                'active'    =>  'TRUE',
-                                ),
-                'Admin'      =>  array(
-                                'link'      =>  site_url('social/admin'),
-                                'active'    =>  'FALSE',
-                                ),
-                );
 
-        $data['navigator'] = $navigator;
+        $data['here'] = 'Guardadas';
         $data['brand'] = 'MaipuSocial';
         $data['username'] = 'user';
-/*        echo form_open('social/save_search');
-
-        $datas = array(
-              'name'        => 'keywords',
-              'id'          => 'keywords',
-              'value'       => '',
-              'maxlength'   => '80',
-              'size'        => '80',
-        );
-        echo form_input($data);
-
-        $datas = array(
-              'name'        => 'exclude_words',
-              'id'          => 'exclude_words',
-              'value'       => '',
-              'maxlength'   => '80',
-              'size'        => '80',
-        );
-        echo form_input($datas);
-
-        echo form_checkbox('is_temp', 'dunno', TRUE);
-        echo form_submit('submit', 'Submit');
-        echo form_close("");*/
 		
 		$this->load->view('templates/bootstrap/fluid_header', $data);
         $this->load->view('templates/bootstrap/fluid_edit_search', $data);

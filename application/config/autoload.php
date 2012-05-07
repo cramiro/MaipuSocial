@@ -64,7 +64,7 @@ $autoload['libraries'] = array('doctrine', 'session');
 |	$autoload['helper'] = array('url', 'file');
 */
 
-$autoload['helper'] = array();
+$autoload['helper'] = array('url');
 
 
 /*

@@ -13,7 +13,7 @@
 		
 				$opciones = array();
 				foreach ($options as $op){
-					$opciones[$op['db_name']] = $op['label'];
+					$opciones[$op['id']] = $op['name'];
 				}
 
 				$form .= form_dropdown('lista-busqueda', $opciones, $js);
