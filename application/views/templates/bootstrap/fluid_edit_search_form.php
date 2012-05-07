@@ -71,8 +71,8 @@
 
 				echo form_submit($data);
 		?>
-		<a class='btn' href='http://localhost/social/index.php/social/admin'>Cancelar<a>
-
+		<a class='btn' href="<?php echo site_url('social/admin');?>">Cancelar</a>
+		<a class='btn' href="<?php echo site_url('social/delete/'.$busqueda->getId());?>">Eliminar</a>
 		<?php form_close(); ?>
 		</p>
 		</div>

@@ -430,24 +430,51 @@ class Social extends CI_Controller {
 	}
 
 	private function sidebar(){
+		$searches = $this->getSavedSearches();
+		
+		
 		// Seteo variables que voy a usar en los templates
         $sidebar1['item1'] = array(
-                'item_name'     =>      'Facebook',
+                'item_name'     =>      $searches[0]['name'],
                 'item_link'     =>      'http://facebook.com'
                 );
         $sidebar1['item2'] = array(
-                'item_name'     =>      'Yahoo!',
+                'item_name'     =>      $searches[1]['name'],
                 'item_link'     =>      'http://yahoo.com'
                 );
         $sidebar1['item3'] = array(
+                'item_name'     =>      $searches[2]['name'],
+                'item_link'     =>      'http://twitter.com'
+                );
+
+		// Seteo variables que voy a usar en los templates
+        $sidebar2['item1'] = array(
+                'item_name'     =>      'Facebook',
+                'item_link'     =>      'http://facebook.com'
+                );
+        $sidebar2['item2'] = array(
                 'item_name'     =>      'Twitter',
                 'item_link'     =>      'http://twitter.com'
                 );
+        $sidebar2['item3'] = array(
+                'item_name'     =>      'YouTube',
+                'item_link'     =>      'http://youtube.com'
+                );
+
+		// Seteo variables que voy a usar en los templates
+        $sidebar3['item1'] = array(
+                'item_name'     =>      'SugarCRM',
+                'item_link'     =>      'http://sugarcrm.amaipu.com.ar'
+                );
+        $sidebar3['item2'] = array(
+                'item_name'     =>      'Zimbra',
+                'item_link'     =>      'http://zimbra.amaipu.com.ar'
+                );
 		
         return array(
-                'Sidebar 1'     =>      $sidebar1,
-                'Sidebar 2'     =>      $sidebar1,
-                'Sidebar 3'     =>      $sidebar1,
+                'Búsquedas Guardadas'     =>      $sidebar1,
+                'Redes Sociales'     =>      $sidebar2,
+                'Mundo Maipú'     =>      $sidebar3,
                 );
 	}
 	
@@ -465,6 +492,19 @@ class Social extends CI_Controller {
 		}
 		return $busquedas;
 	
+	}
+	public function delete( $searchID = NULL){
+		if (NULL == $searchID){
+			redirect ('/social');
+			return;
+		}
+		
+		$search = $this->doctrine->em->getRepository('Entities\Search')->findOneBy(
+                    array("id" => $searchID) );
+        $this->doctrine->em->remove($search);
+		$this->doctrine->em->flush();
+		
+		redirect ('/social/admin');
 	}
 	
 	public function guardadas(){

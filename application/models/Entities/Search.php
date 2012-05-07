@@ -64,7 +64,7 @@ class Search
     private $updated;
 
     /**
-     * @OneToMany(targetEntity="Entities\Item", mappedBy="search")
+     * @OneToMany(targetEntity="Entities\Item", mappedBy="search", cascade={"remove"})
      */
     private $items;
 
