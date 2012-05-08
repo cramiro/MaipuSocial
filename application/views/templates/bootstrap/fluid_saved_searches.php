@@ -12,8 +12,8 @@
 				foreach ($options as $op){
 					$opciones[$op['id']] = $op['name'];
 				}
-
-				echo form_dropdown('lista-busqueda', $opciones);
+                $searchID = ( isset($searchID) ? $searchID : '');
+				echo form_dropdown('lista-busqueda', $opciones, $searchID );
 				
 				// Boton para hacer submit
 				 $data_input = array(

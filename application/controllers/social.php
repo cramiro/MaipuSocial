@@ -258,17 +258,15 @@ class Social extends CI_Controller {
         $data['sidebar'] = $this->sidebar();
 
         $esGuardada = FALSE;
-        if ($this->input->post('lista-busqueda')){
+        $here = 'Home';
+        if ($this->input->post('lista-busqueda') OR $this->uri->segment(3) ){
             $esGuardada = TRUE;
-            $here = 'Guardadas';
-            $data['options'] = $this->getSavedSearches();
-        }else{
-            $here = 'Home';
         }
+        
         $data['here'] = $here;
         $data['brand'] = 'MaipuSocial';
         $data['username'] = 'user';
-
+		
         if ( $this->uri->segment(3) === FALSE){
             // Obtengo los valores de la busqueda
             $options = $this->input->post('source');
@@ -292,7 +290,8 @@ class Social extends CI_Controller {
                 $search = new Entities\Search;
                 $search->setIsTemp($this->input->post('is_temp'));
                 $search->setKeywords($this->input->post('keywords'));
-                $search->setName('nombre');
+                $name = preg_replace('/\W.*/','',$this->input->post('keywords'));
+                $search->setName($name);
                 $search->setDescription('descripcion');
                 $search->setExcludeWords($this->input->post('exclude_words'));
     
@@ -301,6 +300,10 @@ class Social extends CI_Controller {
                 // Pido a la libreria que realice la busqueda
                 $this->load->library('search');
                 $this->search->perform_search($this->doctrine->em, $search);
+                
+                $search = $this->doctrine->em->getRepository('Entities\Search')->findOneBy(
+                    array("keywords" => $this->input->post('keywords'))
+                    );
             }
 
             $offset = 0;
@@ -405,6 +408,9 @@ class Social extends CI_Controller {
         // Cargo las vistas
         $this->load->view('templates/bootstrap/fluid_header', $data);
         if ($esGuardada){
+        	$here = 'Guardadas';
+            $data['options'] = $this->getSavedSearches();
+            $data['searchID'] = $search->getID();
             $this->load->view('templates/bootstrap/fluid_saved_searches', $data);
         }else{
             $this->load->view('templates/bootstrap/fluid_search_panel', $data);
@@ -450,6 +456,7 @@ class Social extends CI_Controller {
             $search = $this->doctrine->em->getRepository('Entities\Search')->findOneBy(
                     array("id" => $this->input->post('lista-busqueda')) );
             $data['busqueda'] = $search;
+            $data['searchID'] = $this->input->post('lista-busqueda');
             // si seleccionaron una busqueda, muestro formulario edit
             $this->load->view('templates/bootstrap/fluid_edit_search_form', $data);
         }

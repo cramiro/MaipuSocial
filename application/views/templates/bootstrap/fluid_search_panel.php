@@ -42,7 +42,7 @@
 				'facebook',		'twitter',		'youtube',		'ask',		'backtype',
 				'bbc',			'bebo',			'bing',			'bleeper',	'blinkx',
 				'blip',			'blogcatalog',	'blogdigger',	'bloggy',	'bloglines',
-            	'blogmarks',	'blogpulse',	'boardreader',	'boardtracker',	'delicious',
+            	'blogmarkds',	'blogpulse',	'boardreader',	'boardtracker',	'delicious',
 				'deviantart',	'digg',			'diigo',		'faves',	'flickr',
 				'fotki',		'friendfeed',	'friendster',	'google blog',	'google buzz',
 				'google news',	'google video',	'highfive',		'identica',	'iterend',

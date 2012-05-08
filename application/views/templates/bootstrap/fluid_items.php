@@ -16,8 +16,42 @@
 				$new_item .= "<div id='myalert' class='alert-message block-message success fade in' data-alert='alert'>";
                 // Agrego el boton para cerrar el bloque
                 //$new_item .= "<a class='close' href='#'>×</a>";
-				$new_item .= "<h2>".$value['title']."</h2>";
-            	$new_item .= $value['description'];
+                if (strlen($value['title']) > 45){
+                
+                    /*
+                    * Separo el string en palabras y su index
+                    */
+                    $str = str_word_count($value['title'], 2);
+                    $title = '';
+                    // Armo un title nuevo hasta el maximo deseado
+                    foreach ($str as $key => $val){
+                        if ($key < 45 ){
+                            $title .= ' '.$val; 
+                        }
+                    }
+                }else{
+                    $title = $value['title'];                
+                }
+                
+				$new_item .= "<h3>".$title."...</h3>";
+				
+				if (strlen($value['description']) > 150){
+                    /*
+                    * Separo el string en palabras y su index
+                    */
+                    $str = str_word_count($value['description'], 2);
+                    $description = '';
+                    // Armo un title nuevo hasta el maximo deseado
+                    foreach ($str as $key => $val){
+                        if ($key < 150 ){
+                            $description .= ' '.$val; 
+                        }
+                    }
+				}else{
+				    $description = (strlen($value['description']) > 1 ? 
+				            $value['description'] : 'Sin descripción');
+				}
+            	$new_item .= $description.'...';
 				//echo "<p>".$value['description']."</p>";
 
 				// Datos de la fuente del item

@@ -7,16 +7,14 @@
             <div class="span8 offset6">
 			<?php 
 				$form = form_open('social/admin');
-	
-				// Input para la busqueda
-				$js = "id='xlInput'";
 		
 				$opciones = array();
 				foreach ($options as $op){
 					$opciones[$op['id']] = $op['name'];
 				}
+                $searchID = ( isset($searchID) ? $searchID : '' );
 
-				$form .= form_dropdown('lista-busqueda', $opciones, $js);
+				$form .= form_dropdown('lista-busqueda', $opciones, $searchID);
 
 
 				// Boton para hacer submit
