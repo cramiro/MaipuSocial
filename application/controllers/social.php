@@ -29,7 +29,36 @@ class Social extends CI_Controller {
      * map to /index.php/welcome/<method_name>
      * @see http://codeigniter.com/user_guide/general/urls.html
      */
-    public function save_search($id)
+    public function save_search()
+    {
+        $this->load->helper('url');
+        //$this->load->helper('form');
+        //$this->load->library('form_validation');
+
+        $search_id = $this->input->post('search_id');
+        echo "Search id : {$search_id}";
+
+        if ( $search_id == '' ){
+            // Si no tiene id => creo nueva busqueda
+            $search = new Entities\Search;
+        }else{
+            // Si tiene id => lo busco para actualizar
+            $search = $this->doctrine->em->find('Entities\Search', $search_id);
+        }
+        $search->setIsTemp($this->input->post('is_temp'));
+        $search->setName($this->input->post('search-name'));
+        $search->setKeywords($this->input->post('keywords'));
+        $search->setExcludeWords($this->input->post('exclude_words'));
+        $search->setUpdated(new Datetime());
+
+        $this->doctrine->em->persist($search);
+        $this->doctrine->em->flush();
+
+        //echo "Success!";
+        redirect('social/admin');
+    }
+
+    public function temp_to_saved_search($id)
     {
         $this->load->helper('url');
 
@@ -310,6 +339,24 @@ class Social extends CI_Controller {
         }
         $options = $this->session->userdata('source');
 
+        /* Guardo en la sesion las ultimas 3 busquedas utilizadas */
+        if($this->session->userdata('last1') != $searchID){
+            /* Debo rotar las otras busquedas */
+            $temp_search_id = $this->session->userdata('last2');
+            $this->session->set_userdata('last3', $temp_search_id);
+
+            $temp_search_id = $this->session->userdata('last1');
+            $this->session->set_userdata('last2', $temp_search_id);
+
+            $this->session->set_userdata('last1', $searchID);
+        }
+/*echo "<pre>"; var_dump($this->session->userdata('last1')); echo "</pre>";
+echo "<pre>"; var_dump($this->session->userdata('last2')); echo "</pre>";
+echo "<pre>"; var_dump($this->session->userdata('last3')); echo "</pre>";*/
+
+        $this->session->set_userdata('source', $options);
+
+
         $this->load->library('pagination');
         $config['base_url'] = base_url()."index.php/social/search/{$searchID}/";
         $total = count($search->getResults($this->session->userdata('source')));
@@ -454,20 +501,32 @@ class Social extends CI_Controller {
     }
 
     private function sidebar(){
-        $searches = $this->getSavedSearches();
+        //$searches = $this->getSavedSearches();
         
+        if($this->session->userdata('last1')){
+            $search1_name = $this->doctrine->em->getRepository('Entities\Search')->findOneBy(
+                array("id" => $this->session->userdata('last1')))->getName();
+        }
+        if($this->session->userdata('last2')){
+            $search1_name = $this->doctrine->em->getRepository('Entities\Search')->findOneBy(
+                array("id" => $this->session->userdata('last2')))->getName();
+        }
+        if($this->session->userdata('last3')){
+            $search1_name = $this->doctrine->em->getRepository('Entities\Search')->findOneBy(
+                array("id" => $this->session->userdata('last3')))->getName();
+        }
         
         // Seteo variables que voy a usar en los templates
         $sidebar1['item1'] = array(
-                'item_name'     =>      $searches[0]['name'],
+                'item_name'     =>      $search1_name,
                 'item_link'     =>      'http://facebook.com'
                 );
         $sidebar1['item2'] = array(
-                'item_name'     =>      $searches[1]['name'],
+                'item_name'     =>      $search2_name,
                 'item_link'     =>      'http://yahoo.com'
                 );
         $sidebar1['item3'] = array(
-                'item_name'     =>      $searches[2]['name'],
+                'item_name'     =>      $search3_name,
                 'item_link'     =>      'http://twitter.com'
                 );
 
