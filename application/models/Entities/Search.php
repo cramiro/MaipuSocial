@@ -140,6 +140,11 @@ class Search
         $this->updated = $updated;
     }
     
+    public function setAdded($added)
+    {
+        $this->added = $added;
+    }
+    
     public function getResults($networks = array())
     {
         $list = array();

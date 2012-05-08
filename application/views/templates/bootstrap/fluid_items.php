@@ -63,7 +63,7 @@
 			$save_search .= "<div id='myalert' class='alert-message info fade in' data-alert='alert' style='display:none'>";
 			$save_search .= "<a class='close' href='#'>×</a>";
 			$save_search .= "Búsqueda guardada <strong>exitosamente!</strong></div>";
-			$save_search .= "<button id='save-search' class='btn large success' data-toggle='toggle' data-loading-text='Guardando...' data-complete-text='Búsqueda Guardada.' onclick='saveSearch();'>Guardar Búsqueda!</button>";
+            $save_search .= "<button id='save-search' class='btn large success' data-toggle='toggle' data-loading-text='Guardando...' data-complete-text='Búsqueda Guardada.' onclick='saveSearch(\"".site_url('social/save_search')."\");'>Guardar Búsqueda!</button>";
 			$save_search .= "</div>";
 			echo $save_search;
 

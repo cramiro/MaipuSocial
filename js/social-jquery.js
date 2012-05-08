@@ -25,11 +25,12 @@ function importSugar(item){
 
 }
 
-function saveSearch(){
+function saveSearch(base_url){
 	var btn = $('#save-search');
     btn.button('loading');
     setTimeout(function(){btn.button('complete')}, 3000);
 
+    jQuery.ajax(base_url + '/'+document.getElementById('form_busqueda').elements['idSearch'].value);
 	// Muestro alert
 	setTimeout(function(){$("#myalert").show('slow');btn.hide('slow');}, 3005);
 }

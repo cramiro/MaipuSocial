@@ -1,12 +1,11 @@
         <!-- Main hero unit for a primary marketing message or call to action -->
-
         <div class="hero-unit">
             <!--<form>-->
             <h5>Hot-Search!</h5>
 			<div class="clarfix">
             <div class="span8 offset6">
 			<?php 
-				$form = form_open('social/search');
+				$form = form_open('social/search', array('id' => 'form_busqueda'), array('idSearch' => (isset($idSearch)? $idSearch: null)));
 				// Input para la busqueda
 				$data_input = array(
 						'name' => 'keywords',
