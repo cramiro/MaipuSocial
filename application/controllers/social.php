@@ -45,7 +45,6 @@ class Social extends CI_Controller {
             // Si tiene id => lo busco para actualizar
             $search = $this->doctrine->em->find('Entities\Search', $search_id);
         }
-        $search->setIsTemp($this->input->post('is_temp'));
         $search->setName($this->input->post('search-name'));
         $search->setKeywords($this->input->post('keywords'));
         $search->setExcludeWords($this->input->post('exclude_words'));
