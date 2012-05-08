@@ -29,32 +29,20 @@ class Social extends CI_Controller {
      * map to /index.php/welcome/<method_name>
      * @see http://codeigniter.com/user_guide/general/urls.html
      */
-    public function save_search()
+    public function save_search($id)
     {
         $this->load->helper('url');
-        //$this->load->helper('form');
-        //$this->load->library('form_validation');
 
-        $search_id = $this->input->post('search_id');
-        echo "Search id : {$search_id}";
-
-        if ( $search_id == '' ){
-            // Si no tiene id => creo nueva busqueda
-            $search = new Entities\Search;
-        }else{
+        if ( $id != '' ){
             // Si tiene id => lo busco para actualizar
-            $search = $this->doctrine->em->find('Entities\Search', $search_id);
+            $search = $this->doctrine->em->find('Entities\Search', $id);
+
+            $search->setIsTemp(false);
+            $this->doctrine->em->persist($search);
+            $this->doctrine->em->flush();
+
+            //echo "Success!";
         }
-        $search->setIsTemp($this->input->post('is_temp'));
-        $search->setName($this->input->post('search-name'));
-        $search->setKeywords($this->input->post('keywords'));
-        $search->setExcludeWords($this->input->post('exclude_words'));
-        $search->setUpdated(new Datetime());
-
-        $this->doctrine->em->persist($search);
-        $this->doctrine->em->flush();
-
-        //echo "Success!";
         redirect('social/admin');
     }
 
@@ -288,11 +276,12 @@ class Social extends CI_Controller {
             if(!$search){
                 echo "Nueva busqueda";
                 $search = new Entities\Search;
-                $search->setIsTemp($this->input->post('is_temp'));
+                $search->setIsTemp(true);
                 $search->setKeywords($this->input->post('keywords'));
                 $name = preg_replace('/\W.*/','',$this->input->post('keywords'));
                 $search->setName($name);
                 $search->setDescription('descripcion');
+                $search->setAdded(new DateTime('now'));
                 $search->setExcludeWords($this->input->post('exclude_words'));
     
                 $this->doctrine->em->persist($search);

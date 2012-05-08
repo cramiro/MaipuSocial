@@ -64,6 +64,13 @@ class Search
     private $updated;
 
     /**
+     * @var datetime $added
+     *
+     * @Column(name="added", type="datetime", nullable=false)
+     */
+    private $added;
+
+    /**
      * @OneToMany(targetEntity="Entities\Item", mappedBy="search", cascade={"remove"})
      */
     private $items;
@@ -131,6 +138,11 @@ class Search
     public function setUpdated($updated)
     {
         $this->updated = $updated;
+    }
+    
+    public function setAdded($added)
+    {
+        $this->added = $added;
     }
     
     public function getResults($networks = array())

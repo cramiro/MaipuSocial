@@ -56,4 +56,9 @@ class Search {
 
     }
 
+    public function delete_search($em, $search){
+        $em->remove($search);
+        $em->flush();
+    }
+
 }
