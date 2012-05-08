@@ -248,7 +248,7 @@ class Social extends CI_Controller {
         $this->load->helper('form');     // Para formulario de busqueda
         
         // Cantidad de item por pagina
-        $slice = 15;
+        $slice = 15;		
 
         // Seteo variables que voy a usar en los templates
         // Hacer un get de las primeras 3 networks
