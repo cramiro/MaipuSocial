@@ -553,6 +553,7 @@ class Social extends CI_Controller {
         $data['here'] = 'Guardadas';
         $data['brand'] = 'MaipuSocial';
         $data['username'] = 'user';
+        $data['sources'] = $this->_networks();
         
         // Cargo las vistas
         $this->load->view('templates/bootstrap/fluid_header', $data);

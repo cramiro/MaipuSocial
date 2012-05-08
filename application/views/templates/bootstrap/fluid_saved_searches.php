@@ -34,7 +34,7 @@
 			<!-- Lista de opciones avanzadas. Oculta por defecto -->
 			<?php 
 			$style = "float:left;width:125px;whitespace:nowrap;font-size:15px;padding:0 0 5px 0;";
-			$sources = array(
+			/*$sources = array(
 				'facebook',		'twitter',		'youtube',		'ask',		'backtype',
 				'bbc',			'bebo',			'bing',			'bleeper',	'blinkx',
 				'blip',			'blogcatalog',	'blogdigger',	'bloggy',	'bloglines',
@@ -52,7 +52,7 @@
 				'twitxr',		'webshots',		'wikio',		'wordpress',	'yahoo',
 				'yahoo news',	'youare',		'youtube',		'zoomr'
 				);
-
+             */
 			$input_list = "<div id='search-options' class='span12' style='display:none;'>";
 			$input_list .= "<div class='inputs-list'>";
 			$input_list .= "<div class='row' style='margin-left:0px;'>"; //para la lista
