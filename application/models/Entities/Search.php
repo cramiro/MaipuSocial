@@ -64,6 +64,13 @@ class Search
     private $updated;
 
     /**
+     * @var datetime $added
+     *
+     * @Column(name="added", type="datetime", nullable=false)
+     */
+    private $added;
+
+    /**
      * @OneToMany(targetEntity="Entities\Item", mappedBy="search", cascade={"remove"})
      */
     private $items;
