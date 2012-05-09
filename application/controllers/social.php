@@ -248,12 +248,9 @@ class Social extends CI_Controller {
         $here = 'Home';
         if ( $this->input->post('lista-busqueda') ){
             $esGuardada = TRUE;
-        }else{
+        }
 //echo "<pre>"; var_dump($this->input->post('lista-busqueda')); echo "</pre>";
 //echo "<pre>"; var_dump($this->uri->segment(3)); echo "</pre>";
-            redirect('/social');
-            return;
-        }
         
         $data['here'] = $here;
         $data['brand'] = 'MaipuSocial';
