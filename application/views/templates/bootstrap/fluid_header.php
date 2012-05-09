@@ -47,7 +47,7 @@
           		<a href="<?php echo site_url('social/admin');?>">Admin</a>
           	</li>
           </ul>			
-          <p class="pull-right">Logged in as <a href="#"><?php echo $username?></a></p>
+         <!-- <p class="pull-right">Logged in as <a href="#"><?php echo $username?></a></p>-->
         </div>
       </div>
     </div>
@@ -62,17 +62,21 @@
 			* $sidebar contiene las categorias como key y un array 
 			* con los items que cada uno tiene item_name e item_link
 			*/
-			foreach($sidebar as $name => $items){
-				// Muestro el titulo del sidebar
-				 echo "<h5>{$name}</h5>";
-				 $list = "<ul>";
-				// Recorro los items y armo la lista
-				foreach ($items as $key => $item ){
-					$list .= "<li><a href='{$item['item_link']}'>{$item['item_name']}</a></li>";
-				}
-				$list .= "</ul>";
-				echo $list;
-			}
+			if (isset($sidebar)){
+    			foreach($sidebar as $name => $items){
+	    			// Muestro el titulo del sidebar
+		    		 echo "<h5>{$name}</h5>";
+			    	 $list = "<ul>";
+				    // Recorro los items y armo la lista
+    				if(isset($items)){
+    				    foreach ($items as $key => $item ){
+	    				    $list .= "<li><a href='{$item['item_link']}'>{$item['item_name']}</a></li>";
+		    		    }
+		    		}
+			    	$list .= "</ul>";
+				    echo $list;
+    			}
+    		}
 			?>
         </div> 	<!-- end div well-->
       </div>	<!-- end div sidebar-->

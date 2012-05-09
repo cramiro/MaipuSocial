@@ -481,29 +481,33 @@ class Social extends CI_Controller {
         if($this->session->userdata('last1')){
             $search1_name = $this->doctrine->em->getRepository('Entities\Search')->findOneBy(
                 array("id" => $this->session->userdata('last1')))->getName();
+            $searchID = $this->session->userdata('last1');
                 
              // Seteo variables que voy a usar en los templates
 	        $sidebar1['item1'] = array(
                 'item_name'     =>      $search1_name,
-                'item_link'     =>      'http://facebook.com'
+                'item_link'     =>      site_url('/admin/search/'.$searchID)
                 );
         }
         if($this->session->userdata('last2')){
             $search2_name = $this->doctrine->em->getRepository('Entities\Search')->findOneBy(
                 array("id" => $this->session->userdata('last2')))->getName();
             
+            $searchID = $this->session->userdata('last2');
+                
             $sidebar1['item2'] = array(
                 'item_name'     =>      $search2_name,
-                'item_link'     =>      'http://yahoo.com'
+                'item_link'     =>      site_url('/admin/search/'.$searchID)
                 );
         }
         if($this->session->userdata('last3')){
             $search3_name = $this->doctrine->em->getRepository('Entities\Search')->findOneBy(
                 array("id" => $this->session->userdata('last3')))->getName();
             
+            $searchID = $this->session->userdata('last3');
             $sidebar1['item3'] = array(
                 'item_name'     =>      $search3_name,
-                'item_link'     =>      'http://twitter.com'
+                'item_link'     =>      site_url('/admin/search/'.$searchID)
                 );
         }
         
