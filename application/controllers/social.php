@@ -186,35 +186,8 @@ class Social extends CI_Controller {
 
     public function index()
     {
-           /*$search = $this->doctrine->em->find('Entities\Search', 1);
-        $this->perform_search($search);
-        return;*/
         $this->load->helper('url');
         $this->load->helper('form');
-
-        $url = 'http://sugarcrm.amaipu.com.ar/soap.php?wsdl';
-        $user = 'williweb';
-        $clave = 'w14fr3d4';
-        $modules = array('Contacts');
-        $ldap_key = 'abc123';
-        $ldap_iv = 'password';
-        //$instancia = new InstanciaSugar( $url, $user, $clave, $modules);
-        // Genero consulta para ver obtener encuesta
-        //echo "<pre>";
-        //print_r($instancia);
-        //echo "</pre>";
-        $modulo = 'Contacts';
-        $query = " contacts.deleted = 0 and contacts.last_name like 'castro%' ";
-        $limit = 5;
-        /*$result = $instancia->modulos['Contacts']->buscar(0, $limit, $query);
-
-        $i = 0;
-        foreach ($result as $objeto){
-            echo "OBJETO {$i}<pre>";
-            echo ($objeto->obtener_campo('last_name'));
-            echo "</pre>";
-            $i++;
-        }*/
 
         $data['sidebar'] = $this->sidebar();
 
@@ -226,10 +199,8 @@ class Social extends CI_Controller {
         $data['sources'] = $this->_networks();
         $data['input_value'] = '';
 
-        //$this->load->view('templates/bootstrap/fluid', $data);
         $this->load->view('templates/bootstrap/fluid_header', $data);
         $this->load->view('templates/bootstrap/fluid_search_panel', $data);
-        //$this->load->view('templates/bootstrap/fluid_items', $data);
         $this->load->view('templates/bootstrap/fluid_footer', $data);
     }
 
@@ -258,8 +229,8 @@ class Social extends CI_Controller {
     }
     
     public function search(){
-//echo "<pre>"; var_dump($this->session->userdata('source')); echo "</pre>";
-//echo "<pre>"; var_dump($this->session->userdata('keywords')); echo "</pre>";
+		//echo "<pre>"; var_dump($this->session->userdata('source')); echo "</pre>";
+		//echo "<pre>"; var_dump($this->session->userdata('keywords')); echo "</pre>";
         // Cargo los helpers que voy a necesitar
         $this->load->helper('form');     // Para formulario de busqueda
         
@@ -275,7 +246,7 @@ class Social extends CI_Controller {
 
         $esGuardada = FALSE;
         $here = 'Home';
-        if ($this->input->post('lista-busqueda') OR $this->uri->segment(3) ){
+        if ( $this->input->post('lista-busqueda') ){
             $esGuardada = TRUE;
         }else{
 //echo "<pre>"; var_dump($this->input->post('lista-busqueda')); echo "</pre>";
@@ -327,7 +298,9 @@ class Social extends CI_Controller {
                     array("keywords" => $this->input->post('keywords'))
                     );
             }
-
+            //echo "is temp -> ".$search->getIsTemp();
+            //exit();
+			
             $offset = 0;
             $page = 0;
             $searchID = $search->getID();
@@ -341,6 +314,11 @@ class Social extends CI_Controller {
             $offset = $page;
 
         }
+        
+        if ($search->getIsTemp() != '1'){
+			$esGuardada = TRUE;
+			echo "En guardada por temp!";
+		}
         $options = $this->session->userdata('source');
 
         /* Guardo en la sesion las ultimas 4 busquedas utilizadas */
@@ -464,17 +442,7 @@ class Social extends CI_Controller {
 
     public function admin(){
         
-        $searches = $this->doctrine->em->getRepository('Entities\Search')->findAll();
-        $busquedas = array();
-        foreach ($searches as $search)
-        {
-            $new = array(
-                'id'     => $search->getId(),
-                'name'    => $search->getName(),
-                );
-            $busquedas[] = $new;
-        
-        }
+        $busquedas = $this->getSavedSearches();
 
         // Cargo los helpers que voy a necesitar
         $this->load->helper('url');
@@ -578,7 +546,8 @@ class Social extends CI_Controller {
     }
     
     private function getSavedSearches(){
-        $searches = $this->doctrine->em->getRepository('Entities\Search')->findAll();
+        $searches = $this->doctrine->em->getRepository('Entities\Search')->findBy(
+					array('is_temp' => '0'));
         $busquedas = array();
         foreach ($searches as $search)
         {
