@@ -30,7 +30,8 @@
                         }
                     }
                 }else{
-                    $title = $value['title'];                
+                    $title = (strlen($value['title']) > 1 ? 
+				            $value['description'] : 'Sin título');                
                 }
                 
 				$new_item .= "<h3>".$title."...</h3>";
