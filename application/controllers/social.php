@@ -277,6 +277,11 @@ class Social extends CI_Controller {
         $here = 'Home';
         if ($this->input->post('lista-busqueda') OR $this->uri->segment(3) ){
             $esGuardada = TRUE;
+        }else{
+//echo "<pre>"; var_dump($this->input->post('lista-busqueda')); echo "</pre>";
+//echo "<pre>"; var_dump($this->uri->segment(3)); echo "</pre>";
+            redirect('/social');
+            return;
         }
         
         $data['here'] = $here;
@@ -338,8 +343,13 @@ class Social extends CI_Controller {
         }
         $options = $this->session->userdata('source');
 
-        /* Guardo en la sesion las ultimas 3 busquedas utilizadas */
-        if($this->session->userdata('last1') != $searchID){
+        /* Guardo en la sesion las ultimas 4 busquedas utilizadas */
+        /* Si la busqueda ya estaba en la lista, no la cambio */
+        if(!in_array($searchID, array(
+                $this->session->userdata('last1'),
+                $this->session->userdata('last2'),
+                $this->session->userdata('last3'),
+            ))){
             /* Debo rotar las otras busquedas */
             $temp_search_id = $this->session->userdata('last2');
             $this->session->set_userdata('last3', $temp_search_id);
@@ -349,9 +359,6 @@ class Social extends CI_Controller {
 
             $this->session->set_userdata('last1', $searchID);
         }
-/*echo "<pre>"; var_dump($this->session->userdata('last1')); echo "</pre>";
-echo "<pre>"; var_dump($this->session->userdata('last2')); echo "</pre>";
-echo "<pre>"; var_dump($this->session->userdata('last3')); echo "</pre>";*/
 
         $this->session->set_userdata('source', $options);
 
@@ -500,34 +507,44 @@ echo "<pre>"; var_dump($this->session->userdata('last3')); echo "</pre>";*/
     }
 
     private function sidebar(){
+        $this->load->helper('url');
         //$searches = $this->getSavedSearches();
         
+        $search1_name = $search2_name = $search3_name = '';
+
+        $sidebar1 = array();
         if($this->session->userdata('last1')){
-            $search1_name = $this->doctrine->em->getRepository('Entities\Search')->findOneBy(
-                array("id" => $this->session->userdata('last1')))->getName();
+            $search =  $this->doctrine->em->getRepository('Entities\Search')->findOneBy(array("id" => $this->session->userdata('last1')));
+            if($search){
+                $search1_name = $search->getName();
+                $sidebar1['item1'] = array(
+                    'item_name'     =>      $search1_name,
+                    'item_link'     =>      site_url('social/search/'.$this->session->userdata('last1'))
+                );
+            }
         }
+
         if($this->session->userdata('last2')){
-            $search1_name = $this->doctrine->em->getRepository('Entities\Search')->findOneBy(
-                array("id" => $this->session->userdata('last2')))->getName();
+            $search =  $this->doctrine->em->getRepository('Entities\Search')->findOneBy(array("id" => $this->session->userdata('last2')));
+            if($search){
+                $search2_name = $search->getName();
+                $sidebar1['item2'] = array(
+                    'item_name'     =>      $search2_name,
+                    'item_link'     =>      site_url('social/search/'.$this->session->userdata('last2'))
+                );
+            }
         }
+
         if($this->session->userdata('last3')){
-            $search1_name = $this->doctrine->em->getRepository('Entities\Search')->findOneBy(
-                array("id" => $this->session->userdata('last3')))->getName();
+            $search =  $this->doctrine->em->getRepository('Entities\Search')->findOneBy(array("id" => $this->session->userdata('last3')));
+            if($search){
+                $search3_name = $search->getName();
+                $sidebar1['item3'] = array(
+                    'item_name'     =>      $search3_name,
+                    'item_link'     =>      site_url('social/search/'.$this->session->userdata('last3'))
+                );
+            }
         }
-        
-        // Seteo variables que voy a usar en los templates
-        $sidebar1['item1'] = array(
-                'item_name'     =>      $search1_name,
-                'item_link'     =>      'http://facebook.com'
-                );
-        $sidebar1['item2'] = array(
-                'item_name'     =>      $search2_name,
-                'item_link'     =>      'http://yahoo.com'
-                );
-        $sidebar1['item3'] = array(
-                'item_name'     =>      $search3_name,
-                'item_link'     =>      'http://twitter.com'
-                );
 
         // Seteo variables que voy a usar en los templates
         $sidebar2['item1'] = array(
@@ -554,7 +571,7 @@ echo "<pre>"; var_dump($this->session->userdata('last3')); echo "</pre>";*/
                 );
         
         return array(
-                'Búsquedas Guardadas'     =>      $sidebar1,
+                'Últimas Búsquedas'     =>      $sidebar1,
                 'Redes Sociales'     =>      $sidebar2,
                 'Mundo Maipú'     =>      $sidebar3,
                 );
