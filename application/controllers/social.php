@@ -419,6 +419,7 @@ class Social extends CI_Controller {
         $data['page'] = $page;
         $this->items = $items;
 
+        $data['last_updated'] = $search->getUpdated()->format('Y-m-d H:i:s');
         $data['sources'] = $this->_networks();
         $data['sources_sess'] = $options;
         $data['input_value'] = $this->session->userdata('keywords');

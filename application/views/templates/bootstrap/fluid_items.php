@@ -105,4 +105,6 @@
 
 
 			?>
+
+            Última actualización: <?=$last_updated?> 
         <!-- Example row of columns -->
