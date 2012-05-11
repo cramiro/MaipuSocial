@@ -2,12 +2,17 @@
 
 class Cron extends CI_Controller {
 
+    private $hot_search_freq = 5; // Frequency of hot search updates (in minutes)
+    private $saved_search_freq = 15; // Frequency of saved search updates (in minutes)
+
+    private $hot_search_exp = 24; // Expiration time for hot searches (in hours)
+
     function _expire_temp_searches()
     {
         /* Find in the database every temp search older than 1 day */
         $query = $this->doctrine->em->createQuery('SELECT s FROM Entities\Search s WHERE s.is_temp = 1 AND s.added <= ?1');
         $when = new DateTime('now');
-        $interval = new DateInterval('P0Y0M1DT0H0M0S');
+        $interval = new DateInterval('P0Y0M0DT'.$this->hot_search_exp.'H0M0S');
         $interval->invert = 1;
         $when->add($interval);
         $query->setParameter(1, $when->format('Y-m-d H:i:s'));
@@ -24,17 +29,18 @@ class Cron extends CI_Controller {
 
     }
 
-    function _update_searches()
+    function _update_searches($is_temp, $search_freq)
     {
         /* Find in the database every search that hasn't been updated
            in the last 5 minutes and check for new results.
         */
-        $query = $this->doctrine->em->createQuery('SELECT s FROM Entities\Search s WHERE s.updated <= ?1');
+        $query = $this->doctrine->em->createQuery('SELECT s FROM Entities\Search s WHERE s.updated <= ?1 AND s.is_temp = ?2');
         $when = new DateTime('now');
-        $interval = new DateInterval('P0Y0M0DT0H1M0S');
+        $interval = new DateInterval('P0Y0M0DT0H'.$search_freq.'M0S');
         $interval->invert = 1;
         $when->add($interval);
         $query->setParameter(1, $when->format('Y-m-d H:i:s'));
+        $query->setParameter(2, $is_temp);
         $searches = $query->getResult();
         foreach ($searches as $search){
             echo "Updating ".$search->getKeywords(). "...<br>";
@@ -54,7 +60,8 @@ class Cron extends CI_Controller {
         $this->_expire_temp_searches();
 
         /* Luego actualizo todas las busquedas que necesiten ser actualizadas */
-        $this->_update_searches();
+        $this->_update_searches(true, $this->hot_search_freq);
+        $this->_update_searches(false, $this->saved_search_freq);
     
     }
 

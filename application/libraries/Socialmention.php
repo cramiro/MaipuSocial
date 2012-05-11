@@ -73,8 +73,8 @@ class Socialmention implements iEngine {
 		return $results;
     }
 
-    public function remaining_api_calls(){
-        return 10;
+    public function calls_per_hour(){
+        return 40;
     }
 
 }
