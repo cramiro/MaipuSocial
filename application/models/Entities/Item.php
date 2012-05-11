@@ -108,7 +108,7 @@ class Item
     /**
      * @var string $user
      *
-     * @Column(name="user", type="string", length=20)
+     * @Column(name="user", type="string", length=20, nullable=true)
      */
     private $user;
 
@@ -129,7 +129,7 @@ class Item
     /**
      * @var string $user_link
      *
-     * @Column(name="user_link", type="string", length=50)
+     * @Column(name="user_link", type="string", length=50, nullable=true)
      */
     private $user_link;
 
