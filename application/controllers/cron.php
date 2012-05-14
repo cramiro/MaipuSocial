@@ -7,6 +7,8 @@ class Cron extends CI_Controller {
 
     private $hot_search_exp = 24; // Expiration time for hot searches (in hours)
 
+    private $items_exp = 30; // Expiration time for items (in days)
+
     function _expire_temp_searches()
     {
         /* Find in the database every temp search older than 1 day */
@@ -54,10 +56,27 @@ class Cron extends CI_Controller {
 
     }
 
+    function _expire_items(){
+        /* Find in the database every temp search older than 1 month */
+        $query = $this->doctrine->em->createQuery('SELECT i FROM Entities\Item i WHERE i.timestamp <= ?1');
+        $when = new DateTime('now');
+        $interval = new DateInterval('P0Y0M'.$this->items_exp.'DT0H0M0S');
+        $interval->invert = 1;
+        $when->add($interval);
+        $query->setParameter(1, $when->format('Y-m-d H:i:s'));
+        $items = $query->getResult();
+        foreach ($items as $item){
+            $item->setDeleted(true);
+        }
+    }
+
     public function index(){
         /* Primero borro las busquedas temporales que no hayan sido guardadas 
          * en 1 dia */
         $this->_expire_temp_searches();
+
+        /* Borro los items que tengan mas de $this->items_exp dias */
+        $this->_expire_items();
 
         /* Luego actualizo todas las busquedas que necesiten ser actualizadas */
         $this->_update_searches(true, $this->hot_search_freq);
