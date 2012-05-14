@@ -73,7 +73,7 @@ class Item
     /**
      * @var string $link
      *
-     * @Column(name="link", type="string", length=120)
+     * @Column(name="link", type="string", length=120, nullable=true)
      */
     private $link;
 

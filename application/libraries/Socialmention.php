@@ -21,7 +21,8 @@ class Socialmention implements iEngine {
         $keywords_qstr .= ($search->getExcludeWords() != '')? '-'.str_replace(' ', '-', $search->getExcludewords()) : '';
         $url->setQueryVariables(array(
             'q' => $keywords_qstr,
-            'src' => $networks,
+//            'src' => $networks,
+            't' => 'all',
             'f' => 'json'
         ));
 
