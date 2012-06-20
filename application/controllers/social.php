@@ -36,7 +36,7 @@ class Social extends CI_Controller {
         //$this->load->library('form_validation');
 
         $search_id = $this->input->post('search_id');
-        echo "Search id : {$search_id}";
+        //echo "Search id : {$search_id}";
 
         if ( $search_id == '' ){
             // Si no tiene id => creo nueva busqueda
@@ -229,13 +229,14 @@ class Social extends CI_Controller {
     }
     
     public function search(){
-		//echo "<pre>"; var_dump($this->session->userdata('source')); echo "</pre>";
-		//echo "<pre>"; var_dump($this->session->userdata('keywords')); echo "</pre>";
+        //echo "<pre>"; var_dump($this->session->userdata('source')); echo "</pre>";
+        //echo "<pre>"; var_dump($this->session->userdata('keywords')); echo "</pre>";
         // Cargo los helpers que voy a necesitar
         $this->load->helper('form');     // Para formulario de busqueda
+        $this->load->helper('text');
         
         // Cantidad de item por pagina
-        $slice = 15;		
+        $slice = 15;
 
         // Seteo variables que voy a usar en los templates
         // Hacer un get de las primeras 3 networks
@@ -248,14 +249,11 @@ class Social extends CI_Controller {
         $here = 'Home';
         if ( $this->input->post('lista-busqueda') ){
             $esGuardada = TRUE;
+            $here = 'Guardada';
         }
 //echo "<pre>"; var_dump($this->input->post('lista-busqueda')); echo "</pre>";
 //echo "<pre>"; var_dump($this->uri->segment(3)); echo "</pre>";
         
-        $data['here'] = $here;
-        $data['brand'] = 'MaipuSocial';
-        $data['username'] = 'user';
-		
         if ( $this->uri->segment(3) === FALSE){
             // Obtengo los valores de la busqueda
             $options = $this->input->post('source');
@@ -266,7 +264,7 @@ class Social extends CI_Controller {
             if ($this->input->post('lista-busqueda')){
                 $search = $this->doctrine->em->getRepository('Entities\Search')->findOneBy(
                     array("id" => $this->input->post('lista-busqueda'))  );
-                echo "keyword -> ".$search->getKeywords();
+                //echo "keyword -> ".$search->getKeywords();
             
             }else{
                 // Me fijo si hay una busqueda con esas keywords. Sino, la creo y la guardo
@@ -275,7 +273,7 @@ class Social extends CI_Controller {
                     );
             }
             if(!$search){
-                echo "Nueva busqueda";
+                //echo "Nueva busqueda";
                 $search = new Entities\Search;
                 $search->setIsTemp(true);
                 $search->setKeywords($this->input->post('keywords'));
@@ -297,7 +295,7 @@ class Social extends CI_Controller {
             }
             //echo "is temp -> ".$search->getIsTemp();
             //exit();
-			
+            
             $offset = 0;
             $page = 0;
             $searchID = $search->getID();
@@ -313,9 +311,13 @@ class Social extends CI_Controller {
         }
         
         if ($search->getIsTemp() != '1'){
-			$esGuardada = TRUE;
-			echo "En guardada por temp!";
-		}
+            $esGuardada = TRUE;
+            $here = 'Guardadas';
+            //echo "En guardada por temp!";
+        }
+        $data['here'] = $here;
+        $data['brand'] = 'MaipuSocial';
+        $data['username'] = 'user';
         $options = $this->session->userdata('source');
 
         /* Guardo en la sesion las ultimas 4 busquedas utilizadas */
@@ -389,26 +391,55 @@ class Social extends CI_Controller {
             $item = array();
             $item['source'] = $val->getNetwork();
 
-            if ( $item['source'] == 'twitter'){
-                $item['title'] = 'Twit';
-                $item['description'] = $val->getTitle();
-                $item['user'] = '@'.$val->getUser();
-            }else{
-                $item['title'] = $val->getTitle();
-                $item['description'] = $val->getDescription();
-                $item['user'] = $val->getUser();
+
+            switch($item['source']){
+                case 'twitter':
+                    $item['title'] = 'Twit';
+                    $item['description'] = $val->getTitle();
+                    $item['user'] = '@'.$val->getUser();
+                    break;
+                case 'facebook':
+                    if( strlen( $val->getTitle() ) == 0 ){
+                        $item['title'] = 'Facebook';
+                        $item['description'] = $val->getTitle();
+                    }else{
+                        $item['title'] = $val->getTitle();
+                        //$item['title'] = $val->getTitle();
+                        $item['description'] = $val->getDescription();
+                    }
+                    $item['user'] = $val->getUser();
+                    /*echo strlen( $val->getTitle()) ;
+                    echo "<pre>";
+                    var_dump($item);
+                    echo "</pre>";*/
+
+                    break;
+                default:
+                    //echo "En defoult porque source = {$itme['source']}";
+                    $item['title'] = $val->getTitle();
+                    //$item['title'] = $val->getTitle();
+                    $item['description'] = $val->getDescription();
+                    $item['user'] = $val->getUser();
+                    break;
+                    
             }
+
             $item['link'] = $val->getLink();
             $item['user_link'] = $val->getUserLink();
             $item['domain'] = $val->getDomain();
             $item['user_image'] = $val->getUserImage();
             $item['timestamp'] = $val->getTimestamp()->format('d/m/Y h:i:s A');
             $item['has_been_seen'] = $val->getSeen();
+               $item['title'] = character_limiter($item['title'], 40);
+            $item['description'] = character_limiter($item['description'], 150);
 
             // Marco los items como vistos
             $val->setSeen(true);
 
             $items[]=$item;
+            /*echo "<pre>";
+            var_dump($item);
+            echo "</pre>";*/
         }
         // Actualizo los cambios (seen) en la base de datos
         $this->doctrine->em->flush();
@@ -426,7 +457,7 @@ class Social extends CI_Controller {
         // Cargo las vistas
         $this->load->view('templates/bootstrap/fluid_header', $data);
         if ($esGuardada){
-        	$here = 'Guardadas';
+            $here = 'Guardadas';
             $data['options'] = $this->getSavedSearches();
             $data['searchID'] = $search->getID();
             $this->load->view('templates/bootstrap/fluid_saved_searches', $data);
@@ -545,7 +576,7 @@ class Social extends CI_Controller {
     
     private function getSavedSearches(){
         $searches = $this->doctrine->em->getRepository('Entities\Search')->findBy(
-					array('is_temp' => '0'));
+                    array('is_temp' => '0'));
         $busquedas = array();
         foreach ($searches as $search)
         {
