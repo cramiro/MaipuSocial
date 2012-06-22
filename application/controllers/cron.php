@@ -25,6 +25,7 @@ class Cron extends CI_Controller {
             $this->search->delete_search($this->doctrine->em, $search);
             echo "Done.<br />";
         }
+        $this->doctrine->em->flush();
 //        echo "<pre>"; var_dump($query); echo "</pre>";
 //        echo "<pre>"; var_dump($interval); echo "</pre>";
 //        echo $when->format('Y-m-d H:i:s');
@@ -68,6 +69,7 @@ class Cron extends CI_Controller {
         foreach ($items as $item){
             $item->setDeleted(true);
         }
+        $this->doctrine->em->flush();
     }
 
     public function index(){
