@@ -160,6 +160,10 @@ class Item
     private $search;
 
 
+    public function getId()
+    {
+        return $this->id;
+    }
     public function getNetwork()
     {
         return $this->network;

@@ -424,6 +424,7 @@ class Social extends CI_Controller {
                     
             }
 
+            $item['id'] = $val->getId();
             $item['link'] = $val->getLink();
             $item['user_link'] = $val->getUserLink();
             $item['domain'] = $val->getDomain();
@@ -667,6 +668,14 @@ class Social extends CI_Controller {
         $this->doctrine->em->flush();
 
         echo "Success!";
+    }
+
+    public function delete_item($id)
+    {
+        $item = $this->doctrine->em->find('Entities\Item', $id);
+        $item->setDeleted(true);
+        $this->doctrine->em->flush();
+        echo "Success! $id";
     }
 }
 

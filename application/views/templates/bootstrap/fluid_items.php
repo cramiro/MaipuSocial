@@ -20,7 +20,7 @@
                 }
                 $new_item .= "<div id='myalert' class='alert-message block-message {$message_type} fade in' data-alert='alert'>";
                 // Agrego el boton para cerrar el bloque
-                //$new_item .= "<a class='close' href='#'>×</a>";
+                $new_item .= "<a class='close' data-dismiss='alert' href='#' onClick='javascript:console.log(jQuery.ajax(\"delete_item/{$value['id']}\"))'>×</a>";
                 
                 $new_item .= "<h3>".$value['title']."</h3>";
                 
