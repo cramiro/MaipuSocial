@@ -72,6 +72,7 @@ class Search
 
     /**
      * @OneToMany(targetEntity="Entities\Item", mappedBy="search", cascade={"remove"})
+     * @OrderBy({"timestamp" = "DESC"})
      */
     private $items;
 
@@ -149,7 +150,7 @@ class Search
     {
         $list = array();
         foreach ($this->items->getValues() as $item){
-            if(count($networks) == 0 or !$networks or (is_array($networks) and in_array(ucfirst($item->getNetwork()), $networks))){
+            if(!$item->getDeleted() and (count($networks) == 0 or !$networks or (is_array($networks) and in_array(ucfirst($item->getNetwork()), $networks)))){
                 $list[] = $item;
             }
         }
@@ -159,7 +160,7 @@ class Search
     public function getSliceResults($offset, $lenght, $networks = array()){
         $list = array();
         foreach ($this->items->getValues() as $item){
-            if(count($networks) == 0 or !$networks or (is_array($networks) and in_array(ucfirst($item->getNetwork()), $networks))){
+            if(!$item->getDeleted() and (count($networks) == 0 or !$networks or (is_array($networks) and in_array(ucfirst($item->getNetwork()), $networks)))){
                 $list[] = $item;
             }
         }
