@@ -72,6 +72,7 @@
 				$input_list .= "</label></div>";
 				$input_list .= $end;
 			}
+            $input_list .= "<div style='{$style}'><label>Todo <input type='checkbox' name='checkAllAuto' id='checkAllAuto'/></label></div>"; // cierro div class=input-list
 			$input_list .= "</div></div>"; // cierro div class=input-list
 			$input_list .= "</div>"; // cierro div class span12
 

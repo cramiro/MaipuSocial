@@ -3,6 +3,14 @@
         </footer>
       </div> 	<!-- end content -->
     </div>		<!-- end container-fluid-->
+<script type="text/javascript">
+$('#checkAllAuto').click(
+    function()
+    {
+        $("INPUT[type='checkbox']").attr('checked', $('#checkAllAuto').is(':checked'));    
+    }
+)
+</script>
 
   </body>
 </html>
