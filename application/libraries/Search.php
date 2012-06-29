@@ -37,6 +37,11 @@ class Search {
         // Save each new item into the database if new
         $new_results = array();
         foreach ($items_arr as $item){
+            if($this->inTime($item)){
+                // Doesn't save the item if it wasn't originally created during "work hours"
+                $item->unsetSearch($search);
+                continue;
+            }
             if (!$em->getRepository('Entities\Item')->findOneBy(array("hash" => sha1($item->getLink())))){
                 $em->persist($item);
                 $new_results[] = $item;
@@ -59,6 +64,17 @@ class Search {
     public function delete_search($em, $search){
         $em->remove($search);
         $em->flush();
+    }
+
+    private function inTime($item){
+        $ts = $item->getTimestamp();
+        //echo "<pre>"; var_dump(get_class_methods($ts)); echo "</pre>";
+        $hora = $ts->format('H');
+        //echo "<pre>"; echo "hora: ".$hora; echo "</pre>";
+        if($hora >= 8 and $hora <= 19){
+            return true;
+        }
+        return false;
     }
 
 }

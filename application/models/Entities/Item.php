@@ -366,4 +366,8 @@ class Item
         $this->deleted = $deleted;
     }
 
+    public function __toString(){
+        return urlencode($this->getLink());
+    }
+
 }
