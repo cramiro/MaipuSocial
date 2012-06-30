@@ -9,6 +9,9 @@
 				echo  form_open('social/search');
 
 				$opciones = array();
+                if (count($options) > 0){
+                    $opciones['all'] = 'Todas';
+                }
 				foreach ($options as $op){
 					$opciones[$op['id']] = $op['name'];
 				}

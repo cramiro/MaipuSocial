@@ -253,8 +253,8 @@ class Social extends CI_Controller {
         }
 //echo "<pre>"; var_dump($this->input->post('lista-busqueda')); echo "</pre>";
 //echo "<pre>"; var_dump($this->uri->segment(3)); echo "</pre>";
-        
-        if ( $this->uri->segment(3) === FALSE){
+
+        if ( (!$this->uri->segment(3)) and $this->input->post('lista-busqueda') != 'all'){
             // Obtengo los valores de la busqueda
             $options = $this->input->post('source');
             // La guardo en la sesion
@@ -303,14 +303,22 @@ class Social extends CI_Controller {
 
 
         }else{
-            $searchID = $this->uri->segment(3);
+            // O bien es una busqueda guardada, o bien es "Todas"
+            if($this->uri->segment(3)){
+                $searchID = $this->uri->segment(3);
+            }else{
+                $searchID = 'all';
+            }
             $page = $this->uri->segment(4);
-            $search = $this->doctrine->em->find('Entities\Search', $searchID);
             $offset = $page;
+
+            if($searchID != 'all'){
+                $search = $this->doctrine->em->find('Entities\Search', $searchID);
+            }
 
         }
         
-        if ($search->getIsTemp() != '1'){
+        if ($searchID == 'all' or $search->getIsTemp() != '1'){
             $esGuardada = TRUE;
             $here = 'Guardadas';
             //echo "En guardada por temp!";
@@ -342,7 +350,11 @@ class Social extends CI_Controller {
 
         $this->load->library('pagination');
         $config['base_url'] = base_url()."index.php/social/search/{$searchID}/";
-        $total = count($search->getResults($this->session->userdata('source')));
+        if($searchID == 'all'){
+            $total = count($this->doctrine->em->getRepository('Entities\Search')->getAllResults());
+        }else{
+            $total = count($search->getResults($this->session->userdata('source')));
+        }
         $config['total_rows'] = $total;
         $config['per_page'] = 15;
         $config['uri_segment'] = '4';
@@ -384,7 +396,11 @@ class Social extends CI_Controller {
 
 
         // Recupero resultados y los paso a las vistas
-        $result = $search->getSliceResults($offset, $slice, $this->session->userdata('source'));
+        if($searchID == 'all'){
+            $result = $this->doctrine->em->getRepository('Entities\Search')->getSlicedResults($offset, $slice);
+        }else{
+            $result = $search->getSliceResults($offset, $slice, $this->session->userdata('source'));
+        }
 
         $items = array();
         foreach ($result as $key => $val){
@@ -447,11 +463,11 @@ class Social extends CI_Controller {
         $data['items'] = $items;
         $data['pagelinks'] = $pagelinks;
         //echo "Search ID -> ".$search->getID();
-        $data['idSearch'] = $search->getID();
+        $data['idSearch'] = $searchID;
         $data['page'] = $page;
         $this->items = $items;
 
-        $data['last_updated'] = $search->getUpdated()->format('Y-m-d H:i:s');
+        $data['last_updated'] = ($searchID == 'all')? '' : $search->getUpdated()->format('Y-m-d H:i:s');
         $data['sources'] = $this->_networks();
         $data['sources_sess'] = $options;
         $data['input_value'] = $this->session->userdata('keywords');
@@ -460,7 +476,7 @@ class Social extends CI_Controller {
         if ($esGuardada){
             $here = 'Guardadas';
             $data['options'] = $this->getSavedSearches();
-            $data['searchID'] = $search->getID();
+            $data['searchID'] = $searchID;
             $this->load->view('templates/bootstrap/fluid_saved_searches', $data);
         }else{
             $this->load->view('templates/bootstrap/fluid_search_panel', $data);

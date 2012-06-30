@@ -30,6 +30,10 @@ class Doctrine
         $proxyClassLoader = new \Doctrine\Common\ClassLoader('Proxies', APPPATH.'models');
         $proxyClassLoader->register();
 
+        // load the repositories
+        $repositoryClassLoader = new \Doctrine\Common\ClassLoader('Repositories', APPPATH.'models');
+        $repositoryClassLoader->register();
+
         // set up the configuration
         $config = new \Doctrine\ORM\Configuration;
    

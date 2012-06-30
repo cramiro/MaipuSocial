@@ -74,7 +74,7 @@
             $search = $this->doctrine->em->getRepository('Entities\Search')->findOneBy(
                     array("id" => $this->session->userdata('search_id'))
                     );
-            if ($search->getIsTemp() == '1' ){
+            if ($idSearch != 'all' and $search->getIsTemp() == '1' ){
             
             
             $save_search = "<div class='well'>";
